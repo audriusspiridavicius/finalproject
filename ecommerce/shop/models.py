@@ -31,6 +31,7 @@ class Product(models.Model):
     sku = models.CharField(max_length=100, unique=True, null=False, blank=False)
     short_description = models.CharField(max_length=1000, blank=True, default="")
     price = models.FloatField(null=False, blank=False, default=0.00)
+    online = models.BooleanField(default=False)
     
     def __str__(self) -> str:
         return f"{self.title}"
@@ -77,7 +78,7 @@ class Category(models.Model):
     description = models.CharField(max_length=1000)
     products = models.ManyToManyField(Product, related_name="categories")
     picture = models.ImageField(upload_to=settings.CATEGORY_IMAGES_FOLDER, default="img/categories/default.png")
-    
+    online = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.name}"
     

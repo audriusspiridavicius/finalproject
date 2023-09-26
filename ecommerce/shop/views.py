@@ -13,3 +13,4 @@ class CategoriesView(generic.ListView):
     template_name = 'categories.html'
     model = Category
     context_object_name = 'categories'
+    queryset = Category.objects.filter(online=True)

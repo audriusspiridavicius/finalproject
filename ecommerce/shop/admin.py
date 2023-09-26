@@ -19,8 +19,10 @@ class ProductImagesInline(admin.StackedInline):
     
 class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductDescriptionInline,ProductImagesInline]
-    list_display = ['title', 'sku', 'quantity', 'image']
+    list_display = ['title', 'sku', 'quantity', 'image', 'online']
     # list_display = ['title', 'sku', 'quantity']
+    list_editable = ['online']
+    
     
     def get_readonly_fields(self, request, obj=None):
         if obj:
@@ -31,6 +33,12 @@ class ProductAdmin(admin.ModelAdmin):
         
     # def quantity(self,*args):
     #     return f"{Product.gquantity}"
+
+class CategoryAdmin(admin.ModelAdmin):
+    model = Category
+    list_display = ['name','picture','online']
+    list_editable = ['online']
+
         
 admin.site.register(Product,ProductAdmin)
 admin.site.register(ProductQuantity)
@@ -38,4 +46,4 @@ admin.site.register(ProductDescription)
 admin.site.register(ProductPrices)
 admin.site.register(ProductLocation)
 
-admin.site.register(Category)
+admin.site.register(Category, CategoryAdmin)
