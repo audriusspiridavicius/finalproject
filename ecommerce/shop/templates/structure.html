@@ -16,7 +16,11 @@
         rel="stylesheet" 
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" 
         crossorigin="anonymous">
-        
+        {%load static%}
+        <link href="{% static 'css/main.css'%}" 
+        rel="stylesheet" 
+        crossorigin="anonymous">
+
     </head>
     <body>
         <div class="container">
@@ -28,9 +32,9 @@
               </div>
         
               <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-                <li><a href="#" class="nav-link px-2 link-secondary">Home</a></li>
-                <li><a href="#" class="nav-link px-2">Features</a></li>
-                <li><a href="#" class="nav-link px-2">Pricing</a></li>
+                {% comment %} <li><a href="#" class="nav-link px-2 link-secondary">Home</a></li> {% endcomment %}
+                <li><a href="{% url 'categories'%}" class="nav-link px-2">Kategorijos</a></li>
+                <li><a href="{% url 'categories'%}" class="nav-link px-2">produktai</a></li>
                 <li><a href="#" class="nav-link px-2">FAQs</a></li>
                 <li><a href="#" class="nav-link px-2">About</a></li>
               </ul>
@@ -50,14 +54,9 @@
     </body>
 </html>
 
-
-
-op op test test
-<br>
-<br>
-<br>
-
-
-{%block main%}
+<div class="flex">
+  {%block main%}
   
-{%endblock main%}
+  {%endblock main%}
+</div>
+

@@ -1,0 +1,26 @@
+
+.flex{
+    display: flex;
+}
+
+.grid-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+#left_side_continer{
+    max-width:40%;
+    width: 25%;
+}
+.itm-block{
+    /* width: 450px; */
+    width: 300px;
+}
+.itm-block .cat-img img{
+    margin: auto;
+    width:100%;
+}
+.cat-img{
+    padding: 5px;
+}

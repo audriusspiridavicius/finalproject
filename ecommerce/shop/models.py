@@ -74,10 +74,13 @@ class ProductPrices(models.Model):
     
 class Category(models.Model):
     name = models.CharField(max_length=100, null=False, blank=False)           
-    
     description = models.CharField(max_length=1000)
-    
     products = models.ManyToManyField(Product, related_name="categories")
+    picture = models.ImageField(upload_to=settings.CATEGORY_IMAGES_FOLDER, default="img/categories/default.png")
+    
+    def __str__(self):
+        return f"{self.name}"
+    
     
 class ProductDescription(models.Model):
     category = models.CharField(max_length=100)

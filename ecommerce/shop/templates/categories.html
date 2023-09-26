@@ -1,0 +1,19 @@
+{% extends 'structure.html'%}
+
+
+{%load static%}
+{% block main %}
+{% include "leftsidebar.html" with name="audrelis" %}
+<div class="grid-container">    
+    {%if categories%}
+        {%for cat in categories%}
+            <div class="itm-block">
+                <div class="category-name">{{cat.name}}</div>
+                <div class="cat-img">
+                    <img src="{% static cat.picture.url %}" alt="category image"/>
+                </div>
+            </div>
+        {%endfor%}      
+    {%endif%}
+</div>
+{% endblock main %}
