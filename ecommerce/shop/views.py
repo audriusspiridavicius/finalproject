@@ -18,7 +18,7 @@ class CategoriesView(generic.ListView):
     queryset = Category.objects.filter(online=True)
     
     
-class ProductsView(generic.ListView):
+class ProductsListView(generic.ListView):
     template_name = 'products.html'
     model = Product
     context_object_name = "products"    
@@ -76,4 +76,16 @@ class CategoryProductsView(generic.ListView):
     def get_queryset(self):
         return None
     
+    
+class ProductDetailView(generic.DetailView):
+    model = Product
+    template_name = 'product.html'
+    
+    def get_queryset(self):
+        
+        product_id = self.kwargs['pk']
+        
+        product = Product.objects.filter(id=product_id, online=True)
+        
+        return product
     

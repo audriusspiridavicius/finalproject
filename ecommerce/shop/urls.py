@@ -12,8 +12,9 @@ urlpatterns = [
          views.CategoryProductsView.as_view(),
          name='category'),
     path('products/<int:pk>', 
-         views.ProductsView.as_view(),
-         name='products')
+         views.ProductsListView.as_view(),
+         name='products'),
+    path('product/<int:pk>', views.ProductDetailView.as_view(), name='product_page')
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) +  \
 static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

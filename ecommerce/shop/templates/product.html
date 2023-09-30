@@ -1,0 +1,71 @@
+{% extends 'structure.html'%}
+
+
+
+{% block page_title %}{{product.title}},{{product.sku}}{% endblock page_title %}
+
+
+
+{% block main %}
+{%load static%}
+
+<div class="col-8 flex flex-wrap">
+    {%for image in product.images.all%}
+        <img src="{% static image.image_name.url%}" alt="image{{forloop.counter0}}" class="col-lg-6 col-sm-12"/>
+    {%endfor%}
+</div>
+<div class="col-4">
+    <h1>{{product.title}}</h1>
+    <div>sku:{{product.sku}}</div>
+    
+    <div>{{product.short_description}}</div>
+    
+    {%for attribute in product.attributes.all%}
+        <div>{{attribute.property}}:{{attribute.value}}</div>
+
+    {%endfor%}
+
+
+</div>
+<div class="col-xs-12">
+
+    {%if product.descriptions%}
+        <ul class="nav nav-tabs" id="product_info" role="tablist">
+            
+            {%for product_info in product.descriptions.all%}
+            
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if forloop.first %} active{%endif%}" id="{{product_info.category}}" 
+                    data-bs-toggle="tab" 
+                    data-bs-target="#tab{{forloop.counter0}}" 
+                    type="button" role="tab" 
+                    aria-controls="tab{{forloop.counter0}}" 
+                    aria-selected="false">{{product_info.category}}</button>
+            </li>
+
+
+            {%endfor%}
+            {% comment %} <li class="nav-item" role="presentation">
+                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Profile</button>
+            </li> {% endcomment %}
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            {%for product_info in product.descriptions.all%}
+                <div class="tab-pane fade {% if forloop.first %} show active{%endif%}" 
+                id="tab{{forloop.counter0}}" role="tabpanel" 
+                aria-labelledby="tab{{forloop.counter0}}" tabindex="0">
+                
+                {{product_info.description}}
+
+            
+                </div>
+                {% comment %} <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">...</div> {% endcomment %}
+                {% comment %} 
+                <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">...</div>
+                <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab" tabindex="0">...</div> {% endcomment %}
+            {%endfor%}
+        </div>
+      {%endif%}
+</div>
+
+{% endblock main %}

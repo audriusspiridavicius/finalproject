@@ -3,7 +3,7 @@
 
 
     {%for product in products%}
-        <a href = "#" >
+        <a href = "{% url 'product_page' pk=product.id %}" >
             <div class="itm-block">
                
                 <div class="prod-img">
