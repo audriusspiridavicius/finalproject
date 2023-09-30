@@ -1,3 +1,33 @@
 <div id="left_side_continer">
-    kairysis konteineris
+    <form>
+    {%for attribute_name, attribute_value in attributes.items%}
+        
+        <div class="attribute-block">
+            <div class="attribute-name">{{attribute_name}}</div>
+
+            <div>
+                {%for value in attribute_value%}
+                    {% comment %} <div>{{value.value}} : {{value.selected}}</div> {% endcomment %}
+                    
+                    <div class="form-check">
+                        <label class="form-check-label" for="{{value.value}}">
+                            {{value.value}}
+                        </label>
+                        <input type="checkbox" name="attr" class="attr"{%if value.selected%}checked{%endif%}
+                            hx-trigger="click, load"
+                            hx-get="{%url 'products' pk=cat_id%}"
+                            hx-target=".grid-container"
+                            value="{{value.value}}"
+                            hx-include="[name='attr']"
+                            id="{{value.value}}"
+                        />
+                      </div>
+                {%endfor%}
+                <br>
+            </div>
+        </div>
+        
+
+    {%endfor%}  
+    </form>
 </div>

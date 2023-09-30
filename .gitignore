@@ -1,5 +1,4 @@
 *.pyc
 venv/
-db.*
 ecommerce/db.sqlite3
 ecommerce/db.sqlite3

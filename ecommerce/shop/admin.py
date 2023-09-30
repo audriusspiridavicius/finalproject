@@ -1,12 +1,15 @@
 from django.contrib import admin
 
 from .models import Product, ProductDescription, ProductPrices, ProductQuantity, ProductLocation
-from .models import Category, ProductImages
+from .models import Category, ProductImages, ProductAttributes
 # Register your models here.
 
 
-
-
+class ProductAttributesInline(admin.TabularInline):
+    model = ProductAttributes
+    min_num = 0
+    extra = 0
+    
 class ProductDescriptionInline(admin.StackedInline):
     model = ProductDescription
     min_num = 1
@@ -18,7 +21,7 @@ class ProductImagesInline(admin.StackedInline):
     extra = 0
     
 class ProductAdmin(admin.ModelAdmin):
-    inlines = [ProductDescriptionInline,ProductImagesInline]
+    inlines = [ProductDescriptionInline,ProductImagesInline,ProductAttributesInline]
     list_display = ['title', 'sku', 'quantity', 'image', 'online']
     # list_display = ['title', 'sku', 'quantity']
     list_editable = ['online']
