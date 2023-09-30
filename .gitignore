@@ -1,3 +1,7 @@
 *.pyc
 venv/
 ecommerce/db.sqlite3
+<<<<<<< HEAD
+=======
+ecommerce/db.sqlite3
+>>>>>>> origin/product-detail-page

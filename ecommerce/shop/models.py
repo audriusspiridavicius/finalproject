@@ -31,6 +31,7 @@ class Product(models.Model):
     sku = models.CharField(max_length=100, unique=True, null=False, blank=False)
     short_description = models.CharField(max_length=1000, blank=True, default="")
     price = models.FloatField(null=False, blank=False, default=0.00)
+    online = models.BooleanField(default=False)
     
     def __str__(self) -> str:
         return f"{self.title}"
@@ -43,10 +44,11 @@ class Product(models.Model):
     @property
     def image(self):
         image_url = f"{settings.MEDIA_URL}/img/products/default_no_img.jpg"
-        print(f"self.images -------------------------------------- {self.images}")
+        # print(f"self.images -------------------------------------- {self.images}")
         if self.images.exists():
-            image_url = f"{settings.MEDIA_URL}/{self.images.first().image_name}"
-        return mark_safe(f"<img src='{image_url}' alt='product image' width='100'/>")
+            image_url = f"{self.images.first().image_name.url}"
+        # return mark_safe(f"<img src='{image_url}' alt='product image' width='100'/>")
+        return image_url
     
 
 class ProductLocation(models.Model):
@@ -74,10 +76,13 @@ class ProductPrices(models.Model):
     
 class Category(models.Model):
     name = models.CharField(max_length=100, null=False, blank=False)           
-    
     description = models.CharField(max_length=1000)
-    
     products = models.ManyToManyField(Product, related_name="categories")
+    picture = models.ImageField(upload_to=settings.CATEGORY_IMAGES_FOLDER, default="img/categories/default.png")
+    online = models.BooleanField(default=False)
+    def __str__(self):
+        return f"{self.name}"
+    
     
 class ProductDescription(models.Model):
     category = models.CharField(max_length=100)
@@ -90,5 +95,8 @@ class ProductDescription(models.Model):
 class ProductAttributes(models.Model):
     property = models.CharField(max_length=50)
     value = models.CharField(max_length=100)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)    
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="attributes")    
      
+    def __str__(self):
+        return f"{self.property} - {self.value}"
+    

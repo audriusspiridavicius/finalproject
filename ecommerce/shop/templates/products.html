@@ -1,0 +1,48 @@
+
+
+
+
+    {%for product in products%}
+        <a href = "{% url 'product_page' pk=product.id %}" >
+            <div class="itm-block">
+               
+                <div class="prod-img">
+                    <img src="{{product.image}}" alt="product picture">
+                </div>
+                <div class="product-name text-center">{{product.title}}</div>
+                <div class="product-price text-center">{{product.price}}</div>
+            </div>
+        </a>
+    {%endfor%}
+
+
+
+
+
+    {% comment %}
+
+    atributai
+    {%for atr in aaaa%}
+        <p>{{atr.property}}-{{atr.value}}</p><br />
+    {%endfor%}
+
+
+    only property
+    {%for atr in only_property%}
+        <p>{{atr}}</p><br />
+    {%endfor%}
+
+
+    only value
+    {%for atr in only_values%}
+       
+        <p>{{atr.property}}-{{atr.value}}</p><br />
+    {%endfor%}
+    dsfjkdsahfkjdsahfkjadhskjfh {% endcomment %}
+
+  
+
+
+
+
+

@@ -1,0 +1,21 @@
+{% extends 'structure.html'%}
+
+
+{%load static%}
+{% block main %}
+
+<div class="grid-container flex" >    
+    {%if categories%}
+        {%for cat in categories%}
+            <a href = "{%url 'category' pk=cat.id%}" class="category-link">
+            <div class="itm-block">
+                <div class="cat-img">
+                    <img src="{% static cat.picture.url %}" alt="category image"/>
+                </div>
+                <div class="category-name text-center">{{cat.name}}</div>
+            </div>
+        </a>
+        {%endfor%}      
+    {%endif%}
+</div>
+{% endblock main %}
