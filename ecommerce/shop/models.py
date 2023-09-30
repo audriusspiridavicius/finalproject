@@ -44,10 +44,11 @@ class Product(models.Model):
     @property
     def image(self):
         image_url = f"{settings.MEDIA_URL}/img/products/default_no_img.jpg"
-        print(f"self.images -------------------------------------- {self.images}")
+        # print(f"self.images -------------------------------------- {self.images}")
         if self.images.exists():
-            image_url = f"{settings.MEDIA_URL}/{self.images.first().image_name}"
-        return mark_safe(f"<img src='{image_url}' alt='product image' width='100'/>")
+            image_url = f"{self.images.first().image_name.url}"
+        # return mark_safe(f"<img src='{image_url}' alt='product image' width='100'/>")
+        return image_url
     
 
 class ProductLocation(models.Model):
@@ -94,5 +95,8 @@ class ProductDescription(models.Model):
 class ProductAttributes(models.Model):
     property = models.CharField(max_length=50)
     value = models.CharField(max_length=100)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)    
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="attributes")    
      
+    def __str__(self):
+        return f"{self.property} - {self.value}"
+    
