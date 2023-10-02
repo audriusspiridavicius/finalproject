@@ -3,14 +3,28 @@
 
 
     {%for product in products%}
-        <a href = "{% url 'product_page' pk=product.id %}" >
+        
             <div class="itm-block">
-               
+                
                 <div class="prod-img">
-                    <img src="{{product.image}}" alt="product picture">
+                    <a href = "{% url 'product_page' pk=product.id %}" >
+                        <img src="{{product.image}}" alt="product picture">
+                    </a>
                 </div>
-                <div class="product-name text-center">{{product.title}}</div>
-                <div class="product-price text-center">{{product.price}}</div>
+                <a href = "{% url 'product_page' pk=product.id %}" >
+                    <div class="product-name text-center">
+                        {{product.title}}
+                    </div>
+                    <div class="product-price text-center">{{product.price}}</div>
+                </a>
+                <div class="add-to-basket">
+                    <button type="button" class="btn btn-primary" 
+                    hx-target="#header-basket-info"
+                    hx-get="{%url 'add-to-basket' product_id=product.id%}"
+                    hx-trigger="click"
+                    >Į krepšelį</button>
+
+                </div>
             </div>
         </a>
     {%endfor%}

@@ -16,6 +16,7 @@
         rel="stylesheet" 
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" 
         crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
         {%load static%}
         <link href="{% static 'css/main.css'%}" 
         rel="stylesheet" 
@@ -35,17 +36,25 @@
                 {% comment %} <li><a href="#" class="nav-link px-2 link-secondary">Home</a></li> {% endcomment %}
                 <li><a href="{% url 'categories'%}" class="nav-link px-2">Kategorijos</a></li>
                 <li><a href="{% url 'categories'%}" class="nav-link px-2">produktai</a></li>
-                <li><a href="#" class="nav-link px-2">FAQs</a></li>
-                <li><a href="#" class="nav-link px-2">About</a></li>
+                {% comment %} <li><a href="#" class="nav-link px-2">FAQs</a></li>
+                <li><a href="#" class="nav-link px-2">About</a></li> {% endcomment %}
               </ul>
         
               <div class="col-md-3 text-end">
-                <button type="button" class="btn btn-outline-primary me-2">Login</button>
-                <button type="button" class="btn btn-primary">Sign-up</button>
+                {% comment %} <button type="button" class="btn btn-outline-primary me-2">Login</button>
+                <button type="button" class="btn btn-primary">Sign-up</button> {% endcomment %}
+                <div id="header-basket-info" hx-target="#header-basket-info" hx-trigger="load" hx-get="{%url 'mini-shopping-basket'%}">
+                  
+                </div>
+                
               </div>
             </header>
           </div>
-        
+          <div class="flex">
+            {%block main%}
+            
+            {%endblock main%}
+          </div>
 
         <script src="https://unpkg.com/@popperjs/core@2"></script>    
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" 
@@ -55,9 +64,5 @@
     </body>
 </html>
 
-<div class="flex flex-wrap">
-  {%block main%}
-  
-  {%endblock main%}
-</div>
+
 

@@ -1,8 +1,8 @@
 from collections.abc import Iterable
 from django.db import models
-
+from django.contrib.sessions.models import Session
 from django.conf import settings
-from django.utils.html import mark_safe
+
 # Create your models here.
 
 class ProductQuantity(models.Model):
@@ -99,4 +99,11 @@ class ProductAttributes(models.Model):
      
     def __str__(self):
         return f"{self.property} - {self.value}"
+
+class ShoppingBasket(models.Model):
+    
+    product = models.OneToOneField(Product, on_delete=models.CASCADE, unique=True, null=False)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+
+
     

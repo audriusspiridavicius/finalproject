@@ -15,6 +15,7 @@ img{
 }
 .itm-block{
     max-width: 350px;
+    padding: 15px 30px;
 }
 .itm-block .cat-img img{
     margin: auto;
@@ -36,6 +37,18 @@ img{
 .prod-img img{
     width: 100%;
 }
+
+
+.add-to-basket > .btn-primary{
+    border-radius: 0px;
+    background-color: transparent;
+    color: black;
+    border: solid 1px black;
+    width: 100%;
+}
+
+
+
 /* categories css */
 
 .category-name{
@@ -62,4 +75,18 @@ img{
     padding-left: 0px;
 }
 
-/* attributes css ends */
+/* attributes css end */
+
+
+/* shopping cart css */
+
+#shopping-cart-table .product-image{
+    max-width: 200px;
+}
+
+
+/* shopping cart end */
+
+
+
+

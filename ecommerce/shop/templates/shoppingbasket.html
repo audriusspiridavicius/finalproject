@@ -1,0 +1,15 @@
+{%extends 'structure.html'%}
+
+
+
+{% block page_title %}
+Pirkiniu krepselis
+{% endblock page_title %}
+
+
+{% block main %}
+
+    <div id="shopping-cart" class="container" hx-trigger="load" hx-target="#shopping-cart" hx-get="{%url 'shopping_cart_table'%}">
+    </div>
+
+{% endblock main %}

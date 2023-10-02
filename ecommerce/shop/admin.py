@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import Product, ProductDescription, ProductPrices, ProductQuantity, ProductLocation
-from .models import Category, ProductImages, ProductAttributes
+from .models import Category, ProductImages, ProductAttributes, ShoppingBasket
 # Register your models here.
 
 
@@ -50,3 +50,5 @@ admin.site.register(ProductPrices)
 admin.site.register(ProductLocation)
 
 admin.site.register(Category, CategoryAdmin)
+
+admin.site.register(ShoppingBasket)
