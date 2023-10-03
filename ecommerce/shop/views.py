@@ -141,9 +141,11 @@ def ShopingBasketUpdate(request, product_id):
 @require_http_methods(['GET'])
 def mini_shopping_basket(request):
     
+    
+    total = {"total_sum": 0, "total_count":0}
     cart = ShoppingBasket.objects.filter(session__session_key=request.session.session_key)
     if cart:
-        cart_total = cart.all().select_related().aggregate(total_sum=Sum('product__price'),total_count=Count('product'))
+        total = cart.all().select_related().aggregate(total_sum=Sum('product__price'),total_count=Count('product'))
 
-    return render(request, 'mini_shopping_basket.html',cart_total)
+    return render(request, 'mini_shopping_basket.html', total)
         
