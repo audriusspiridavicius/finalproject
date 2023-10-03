@@ -1,0 +1,24 @@
+
+
+<h2>Log In</h2>
+<form method="post">
+  {% csrf_token %}
+  
+  <form method="post" action="{%url 'login'%}">
+    
+    <div class="form-group">
+      <label for="username">El. paštas</label>
+      <input type="text" id="username" name="username" class="form-control-lg form-control"/>   
+    </div>
+    <div class="form-group">
+      <label for="password">Slaptažodis</label>
+      <input type="password" name="password" id="password"/>    
+    </div>
+
+  </form>
+
+
+
+
+  <button type="submit">Log In</button>
+</form>

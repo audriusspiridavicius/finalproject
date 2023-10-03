@@ -2,3 +2,4 @@
 venv/
 ecommerce/db.*
 
+ecommerce/db.sqlite3

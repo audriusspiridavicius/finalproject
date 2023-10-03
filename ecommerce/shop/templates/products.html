@@ -1,14 +1,14 @@
 
 
 
-
+    {%load static%}
     {%for product in products%}
         
             <div class="itm-block">
                 
                 <div class="prod-img">
                     <a href = "{% url 'product_page' pk=product.id %}" >
-                        <img src="{{product.image}}" alt="product picture">
+                        <img src="{% static product.image%}" alt="product picture">
                     </a>
                 </div>
                 <a href = "{% url 'product_page' pk=product.id %}" >
