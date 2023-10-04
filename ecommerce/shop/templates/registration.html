@@ -1,0 +1,20 @@
+{%extends 'structure.html'%}
+
+
+
+{% block main %}
+{% load crispy_forms_tags %}
+
+  <form action="" method="post" class="m-auto container col-md-6">
+      {% csrf_token %}
+      {{ form|crispy }}
+
+      {% comment %} {% for key, value in form.errors.items %}
+        <h2>{{key}} - {{value}}</h2>
+      {%endfor%} {% endcomment %}
+      <input type="submit" value="Submit" class="btn btn-outline-dark">
+  </form>
+
+{% endblock main %}
+
+

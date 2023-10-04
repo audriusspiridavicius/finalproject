@@ -4,10 +4,16 @@ from django.shortcuts import redirect, render
 from django.views import View, generic
 from .models import Product, Category, ProductAttributes, ShoppingBasket
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.contrib.sessions.models import Session
 from django.views.decorators.http import require_http_methods
-from django.db.models import Avg, Max, Min, Sum, Count
+from django.db.models import Sum, Count
+from django.contrib.auth.models import User
+from django.views.generic.edit import FormMixin
+
+from django.contrib import messages
+from .forms import RegistrationForm
+from django.views.generic.edit import FormView
 # Create your views here.
 
 
@@ -120,6 +126,49 @@ class ShoppingBasketDeleteProduct(View):
         return redirect('shopping_cart_table')
 
 
+class CustomerRegistrationView(FormView,FormMixin):
+# class CustomerRegistrationView(FormView):
+    model = User
+    form_class = RegistrationForm
+    template_name = 'registration.html'
+    success_url = "/wow-shop/"
+
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            return redirect('homepage')
+        
+        form = self.get_form()
+        return render(request,'registration.html',{"form":form})
+    
+    def form_valid(self, form):
+        
+        
+        email = form.cleaned_data['email']
+        username = email
+        password = form.cleaned_data['password']
+        password2 = form.cleaned_data['password2']
+        
+        user_exist = User.objects.filter(username=username)
+        
+        if not user_exist:
+            if password == password2:
+                usr = User.objects.create_user(username=username, email=email, password=password)
+                usr.is_active = False
+                usr.save()
+                
+            else: 
+                messages.error(self.request, 'Slaptažodžiai nesutampa!')
+                return redirect('registration')
+        else:
+            messages.error(self.request, 'Toks Vartotojas jau egzistuoja')
+            return redirect('registration')
+        
+
+        return super(CustomerRegistrationView, self).form_valid(form)
+
+
+
 
 def ShopingBasketUpdate(request, product_id):
     
@@ -140,7 +189,6 @@ def ShopingBasketUpdate(request, product_id):
 
 @require_http_methods(['GET'])
 def mini_shopping_basket(request):
-    
     
     total = {"total_sum": 0, "total_count":0}
     cart = ShoppingBasket.objects.filter(session__session_key=request.session.session_key)
