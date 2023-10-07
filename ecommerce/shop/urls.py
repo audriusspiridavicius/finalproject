@@ -1,12 +1,12 @@
 
 from django.conf import settings
 from django.conf.urls.static import static
-
+from django.views.generic.base import RedirectView
 from django.urls import include, path
 from . import views
 urlpatterns = [
-     path('wow-shop/',views.HomepageView.as_view(), name='homepage'),
-     path('',views.HomepageView.as_view(), name='homepage'),
+     path('homepage/',views.HomepageView.as_view(), name='homepage'),
+     path('',views.HomepageView.as_view()),
      path('kategorijos/', views.CategoriesView.as_view(), name='categories'),
      path('kategorija/<int:pk>', 
           views.CategoryProductsView.as_view(),
@@ -24,7 +24,8 @@ urlpatterns = [
 
      path('cart/mini-shopping-basket',views.mini_shopping_basket, name='mini-shopping-basket'),
 
-     path('registration/', views.CustomerRegistrationView.as_view(), name='registration')
+     path('registration/', views.CustomerRegistrationView.as_view(), name='registration'),
+     path('registration/', views.CustomerRegistrationView.as_view(), name='account')
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 
 

@@ -1,3 +1,7 @@
+body, body a{
+    color: black;
+}
+
 
 img{
     max-width: 100%;
@@ -37,7 +41,9 @@ img{
 .prod-img img{
     width: 100%;
 }
-
+.text-decoration-none{
+    text-decoration: none;
+}
 
 .add-to-basket > .btn-primary{
     border-radius: 0px;
@@ -46,9 +52,15 @@ img{
     border: solid 1px black;
     width: 100%;
 }
-
-
-
+.font-20{
+    font-size:20px;
+}
+.padding-top-7{
+    padding-top: 7px;;
+}
+.bi-person::before{
+    font-size:25px;
+}
 /* categories css */
 
 .category-name{
