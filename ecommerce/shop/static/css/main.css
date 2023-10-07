@@ -3,6 +3,9 @@ body, body a{
 }
 
 
+.link-secondary{
+    text-decoration: none;
+}
 img{
     max-width: 100%;
 }
