@@ -1,0 +1,22 @@
+{%extends 'structure.html'%}
+
+{% block main %}
+
+<div class="flex m-auto">
+<form method="post" action="{%url 'login'%}">
+  <h2>Prisijungimas</h2>
+  {% csrf_token %}
+    <div class="form-group">
+      <label for="username">El. paštas</label>
+      <input type="text" id="username" name="username" class="form-control-lg form-control"/>   
+    </div>
+    <div class="form-group">
+      <label for="password">Slaptažodis</label>
+      <input type="password" name="password" id="password" class="form-control-lg form-control"/>    
+    </div>
+    <div class="form-group">
+      <button name="submit">Prisijungti</button>
+    </div>
+</form>
+</div>
+{% endblock main %}

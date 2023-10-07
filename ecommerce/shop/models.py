@@ -1,8 +1,11 @@
-from collections.abc import Iterable
 from django.db import models
-
+from django.contrib.sessions.models import Session
 from django.conf import settings
-from django.utils.html import mark_safe
+from django.contrib.auth.models import AbstractUser, BaseUserManager, UserManager
+
+
+
+
 # Create your models here.
 
 class ProductQuantity(models.Model):
@@ -99,4 +102,52 @@ class ProductAttributes(models.Model):
      
     def __str__(self):
         return f"{self.property} - {self.value}"
+
+class ShoppingBasket(models.Model):
     
+    product = models.OneToOneField(Product, on_delete=models.CASCADE, unique=True, null=False)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+
+
+class CustomUserManager(BaseUserManager):
+    
+    def create_user(self, email, password, **extra_fields):
+        """
+        Create and save a user with the given email and password.
+        """
+        if not email:
+            raise ValueError("The Email must be set")
+        
+        if not extra_fields.get('is_superuser'):
+            extra_fields.setdefault("is_active", False)
+        
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save()
+        
+        return user
+    
+    def create_superuser(self, email, password, **extra_fields):
+        """
+        Create and save a SuperUser with the given email and password.
+        """
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("is_active", True)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+        return self.create_user(email, password, **extra_fields)
+
+class CustomUser(AbstractUser):
+    
+    username = None
+    email = models.EmailField(unique=True)
+    
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
+    
+    objects = CustomUserManager()

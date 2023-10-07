@@ -1,0 +1,46 @@
+{%load static%}
+<table id="shopping-cart-table" class="flex justify-content-center">
+    <tr>
+        <th></th>
+        <th></th>
+        <th>Pavadinimas</th>
+        <th>Kaina</th>
+        <th></th>
+    </tr>
+    {%for item in shoppingbasket%}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td>
+                <image src="{% static item.product.image%}" class="product-image"/>
+            </td>
+            <td>
+                <div class="product-title">{{item.product.title}}</div>
+                <div class="product-attributes">
+                    <span>spalva:raudona</span>
+                    <span>dydis:L</span>
+                    <span>Spalva:zalia</span>
+                    <span>Ipakuoti kaip dovana: Taip</span>
+                </div>
+            </td>
+            <td>
+                <span class="product-price">{{item.product.price}}&euro;</span>
+            </td>
+            <td>
+                <button class="btn btn-link"
+                    hx-trigger="click"
+                    hx-get="/cart/delete/{{item.product.id}}"
+                    hx-target="#shopping-cart"
+                >Pašalinti</button>
+            </td>
+        </tr>
+
+
+{%endfor%}
+
+<tr></tr>
+</table>  
+
+
+<div id="header-basket-info" hx-target="#header-basket-info" hx-trigger="load" hx-get="{%url 'mini-shopping-basket'%}" hx-swap-oob="true">
+
+</div>

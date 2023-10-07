@@ -14,7 +14,7 @@
                             {{value.value}}
                         </label>
                         <input type="checkbox" name="attr" class="attr"{%if value.selected%}checked{%endif%}
-                            hx-trigger="click, load"
+                            hx-trigger="click"
                             hx-get="{%url 'products' pk=cat_id%}"
                             hx-target=".grid-container"
                             value="{{value.value}}"
