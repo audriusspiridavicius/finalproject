@@ -25,15 +25,22 @@ class ProductImages(models.Model):
     image_name = models.ImageField(upload_to=settings.PRODUCT_IMAGES_FOLDER)
     product = models.ForeignKey("Product", on_delete=models.CASCADE, related_name='images')
 
-
-    
-    
-class Product(models.Model):
-    
+class BaseProduct(models.Model):
     title = models.CharField(max_length=300)
     sku = models.CharField(max_length=100, unique=True, null=False, blank=False)
     short_description = models.CharField(max_length=1000, blank=True, default="")
     price = models.FloatField(null=False, blank=False, default=0.00)
+    
+    class Meta:
+        abstract = True
+    
+    
+class Product(BaseProduct):
+    
+    # title = models.CharField(max_length=300)
+    # sku = models.CharField(max_length=100, unique=True, null=False, blank=False)
+    # short_description = models.CharField(max_length=1000, blank=True, default="")
+    # price = models.FloatField(null=False, blank=False, default=0.00)
     online = models.BooleanField(default=False)
     
     def __str__(self) -> str:
@@ -151,3 +158,23 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = []
     
     objects = CustomUserManager()
+
+class DeliveryAddress(models.Model):
+    pass
+
+class BillingAddress(models.Model):
+    pass    
+    
+class Order(models.Model):
+    
+    delivery_address = models.ForeignKey(DeliveryAddress, on_delete=models.DO_NOTHING)
+    billing_address = models.ForeignKey(BillingAddress, on_delete=models.DO_NOTHING)
+    @property
+    def get_order_number(self):
+        return str(self.id).zfill(10)
+
+class OrderItems(BaseProduct):
+    order = models.ForeignKey(Order, on_delete=models.PROTECT) 
+    
+    
+    
