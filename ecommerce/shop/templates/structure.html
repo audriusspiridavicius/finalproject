@@ -21,7 +21,6 @@
         <link href="{% static 'css/main.css'%}" 
         rel="stylesheet" 
         crossorigin="anonymous">
-
     </head>
     <body>
         <div class="container">
@@ -31,7 +30,10 @@
                   <svg class="bi" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"></use></svg>
                 </a>
               </div>
-        
+              {% if user.is_authenticated %}
+
+              prisijunges
+              {%endif%}
               <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
                 {% comment %} <li><a href="#" class="nav-link px-2 link-secondary">Home</a></li> {% endcomment %}
                 <li><a href="{% url 'categories'%}" class="nav-link px-2">Kategorijos</a></li>

@@ -1,3 +1,4 @@
+{%load static%}
 <table id="shopping-cart-table" class="flex justify-content-center">
     <tr>
         <th></th>
@@ -10,7 +11,7 @@
         <tr>
             <td>{{forloop.counter}}</td>
             <td>
-                <image src="{{item.product.image}}" class="product-image"/>
+                <image src="{% static item.product.image%}" class="product-image"/>
             </td>
             <td>
                 <div class="product-title">{{item.product.title}}</div>

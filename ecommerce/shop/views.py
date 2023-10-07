@@ -127,7 +127,6 @@ class ShoppingBasketDeleteProduct(View):
 
 
 class CustomerRegistrationView(FormView,FormMixin):
-# class CustomerRegistrationView(FormView):
     model = User
     form_class = RegistrationForm
     template_name = 'registration.html'
@@ -154,7 +153,7 @@ class CustomerRegistrationView(FormView,FormMixin):
         if not user_exist:
             if password == password2:
                 usr = User.objects.create_user(username=username, email=email, password=password)
-                usr.is_active = False
+                # usr.is_active = False
                 usr.save()
                 
             else: 

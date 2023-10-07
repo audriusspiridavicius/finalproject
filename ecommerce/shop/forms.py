@@ -36,16 +36,34 @@ def validate_password(value):
          
 class RegistrationForm(forms.ModelForm):
     
-    password2 = forms.CharField(max_length=100, min_length=8,
+    error_massages = {
+        "required": "Privalomas laukas"
+    }
+    
+    password2 = forms.CharField(label="Patvirtinkite slaptažodį",max_length=100, min_length=8,
                                 widget=forms.PasswordInput(),
-                                validators=[validate_password]
+                                validators=[validate_password],
+                                help_text="Patvirtinkite slaptažodį",
+                                error_messages=error_massages
                                 )
     
-    password = forms.CharField(max_length=100, min_length=8,
+    password = forms.CharField(label="Slaptažodis",max_length=100, min_length=8,
                                widget=forms.PasswordInput(),
-                               validators=[validate_password]
+                               validators=[validate_password],
+                               help_text="Slaptažodis",
+                               error_messages=error_massages
                                )
-    email = forms.CharField(max_length=100, validators=[EmailValidator("Iveskite teisingo formato elektroninį paštą")])
+    email = forms.CharField(max_length=100,
+                            validators=[EmailValidator("Iveskite teisingo formato elektroninį paštą"), ],
+                            required=True,
+                            error_messages=error_massages
+                            )
+    
+    def clean_email(self):
+        email_value = self.cleaned_data['email']
+        # email_value = email_value.strip()
+        
+        return email_value
     
     def clean(self) -> dict[str, Any]:
         clean_data = super().clean()

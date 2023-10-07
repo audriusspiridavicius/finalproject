@@ -4,16 +4,21 @@
 
 {% block main %}
 {% load crispy_forms_tags %}
-
-  <form action="" method="post" class="m-auto container col-md-6">
+<div class="container">
+  <div class="row">
+    <h1 class="col-md-12 col-lg-12 text-center">Registracija</h1>
+  </div>  
+  <div class="row">
+    <form action="" method="post" class="m-auto container col-md-6">
       {% csrf_token %}
       {{ form|crispy }}
-
-      {% comment %} {% for key, value in form.errors.items %}
-        <h2>{{key}} - {{value}}</h2>
-      {%endfor%} {% endcomment %}
-      <input type="submit" value="Submit" class="btn btn-outline-dark">
+      <br/>
+      <input type="submit" value="Registruotis" class="btn btn-outline-dark">
   </form>
+  
+  </div>
+</div>
+
 
 {% endblock main %}
 
