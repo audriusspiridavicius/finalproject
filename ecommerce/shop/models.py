@@ -2,10 +2,14 @@ from django.db import models
 from django.contrib.sessions.models import Session
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager, UserManager
+from django.core.mail import send_mail
+import uuid
+from django.template.loader import render_to_string
+from django.conf import settings
 
+from django.utils.html import strip_tags
 
-
-
+from django.core.mail import EmailMessage
 # Create your models here.
 
 class ProductQuantity(models.Model):
@@ -117,14 +121,42 @@ class CustomUserManager(BaseUserManager):
         """
         if not email:
             raise ValueError("The Email must be set")
-        
+        unique_link_id = None
+        content = {}
         if not extra_fields.get('is_superuser'):
             extra_fields.setdefault("is_active", False)
-        
+            unique_link_id = str(uuid.uuid4())
+            
+            context = {
+                'email': email,
+                "unique_id": unique_link_id
+            }
+            
+            
+            content = render_to_string('confirm_registration.html', context=context)
+            # content = strip_tags(content)
+            # eml = EmailMessage(
+            #     subject="confirm registration",
+            #     message=content,
+            #     from_email=settings.EMAIL_HOST_USER,
+            #     recipient_list=[email],
+    
+            # )
+            eml = EmailMessage(
+                "confirm registration",
+                content,
+                from_email=settings.EMAIL_HOST_USER,
+                to=[email],
+            )
+            eml.content_subtype = "html"
+            eml.send()
         email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
+        user = self.model(email=email,unique_link_id=unique_link_id, **extra_fields)
         user.set_password(password)
         user.save()
+
+        
+        
         
         return user
     
@@ -146,8 +178,33 @@ class CustomUser(AbstractUser):
     
     username = None
     email = models.EmailField(unique=True)
-    
+    unique_link_id = models.UUIDField(default=None, null=True)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
     
     objects = CustomUserManager()
+
+class BaseAddress(models.Model):
+    
+    country = models.CharField(max_length=100)
+    city = models.CharField(max_length=50)
+    street = models.CharField(max_length=200)
+    house_number = models.CharField(max_length=10)
+    post_code = models.CharField(max_length=10)
+    other_info = models.CharField(max_length=1000)
+    class Meta:
+        abstract = True
+
+class DeliveryAddress(BaseAddress):
+   
+   pass 
+
+class BillingAddress(BaseAddress):
+   pass 
+
+
+    
+class Account(models.Model):
+    
+    delivery = models.ForeignKey(DeliveryAddress, on_delete=models.SET_NULL, null=True)
+    billing = models.ForeignKey(BillingAddress, on_delete=models.SET_NULL, null=True)

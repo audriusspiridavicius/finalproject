@@ -33,9 +33,12 @@
                 <li><a href="#" class="nav-link px-2">About</a></li> {% endcomment %}
               </ul>
         
-              <div class="col-md-3 text-end flex justify-content-end font-20">
+              <div class="col-md-6 text-end flex justify-content-end font-20">
                 {% comment %} <button type="button" class="btn btn-outline-primary me-2">Login</button>
                 <button type="button" class="btn btn-primary">Sign-up</button>  {% endcomment %}
+                {%if user.is_authenticated%}
+                  <a href="{%url 'account'%}" class="account-email">{{user.email}}</a>
+                {%endif%}
                 <a href="{%if user.is_authenticated%}{%url 'account'%}{%else%}{%url 'login'%}{%endif%}" class="padding-top-7">
                   <span class="bi bi-person p-1 pr-0"></span>
                 </a>
@@ -50,7 +53,7 @@
               </div>
             </header>
           </div>
-          <div class="flex flex-wrap">
+          <div class="flex flex-wrap justify-content-center">
             {%block main%}
             
             {%endblock main%}
