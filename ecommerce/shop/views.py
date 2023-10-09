@@ -1,21 +1,23 @@
 from typing import Any
 from django.db.models.query import QuerySet
 from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
 from django.views import View, generic
-from .models import Product, Category, ProductAttributes, ShoppingBasket
+from .models import Product, Category, ProductAttributes, ShoppingBasket, CustomUser
 from django.db.models import Q
 from django.http import HttpRequest, HttpResponse
 from django.contrib.sessions.models import Session
 from django.views.decorators.http import require_http_methods
 from django.db.models import Sum, Count
-from django.contrib.auth.models import User
 from django.views.generic.edit import FormMixin
 
 from django.contrib import messages
 from .forms import RegistrationForm
 from django.views.generic.edit import FormView
+from django.contrib.auth import get_user_model
 # Create your views here.
 
+User = get_user_model()
 
 class HomepageView(generic.ListView):
     template_name = 'homepage.html'
@@ -46,7 +48,8 @@ class ProductsListView(generic.ListView):
         
         
         filtered_products = Product.objects.filter(categories__in=[cat_id], online=True)
-        filtered_products = filtered_products.filter(attributes__in=[id for id in products_attributes]).distinct()
+        if products_attributes:
+            filtered_products = filtered_products.filter(attributes__in=[id for id in products_attributes]).distinct()
 
         return filtered_products
     
@@ -130,7 +133,7 @@ class CustomerRegistrationView(FormView,FormMixin):
     model = User
     form_class = RegistrationForm
     template_name = 'registration.html'
-    success_url = "/wow-shop/"
+    success_url = reverse_lazy('registration_successful')
 
 
     def get(self, request):
@@ -138,21 +141,21 @@ class CustomerRegistrationView(FormView,FormMixin):
             return redirect('homepage')
         
         form = self.get_form()
+
         return render(request,'registration.html',{"form":form})
     
     def form_valid(self, form):
         
         
         email = form.cleaned_data['email']
-        username = email
         password = form.cleaned_data['password']
         password2 = form.cleaned_data['password2']
         
-        user_exist = User.objects.filter(username=username)
+        user_exist = User.objects.filter(email=email)
         
         if not user_exist:
             if password == password2:
-                usr = User.objects.create_user(username=username, email=email, password=password)
+                usr = User.objects.create_user(email=email, password=password)
                 # usr.is_active = False
                 usr.save()
                 
@@ -195,4 +198,16 @@ def mini_shopping_basket(request):
         total = cart.all().select_related().aggregate(total_sum=Sum('product__price'),total_count=Count('product'))
 
     return render(request, 'mini_shopping_basket.html', total)
+
+def confirm_registration(request, email, id):
+    
+    user = User.objects.filter(email=email, unique_link_id=id, is_active=False).first()
+    
+    if user:
+        user.is_active = True
+        user.unique_link_id = None
+        user.save()
+        return redirect('login')
         
+def registration_successful(request):
+    return render(request,'registration_confirm_letter_sent.html')

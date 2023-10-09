@@ -1,8 +1,10 @@
 from typing import Any
 from django import forms
-from django.contrib.auth.models import User
+
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import EmailValidator
+from django.contrib.auth import get_user_model
+User = get_user_model()
         
 def validate_password(value):
     
@@ -73,7 +75,7 @@ class RegistrationForm(forms.ModelForm):
         
         
         
-        user_exist = User.objects.filter(username=usr)
+        user_exist = User.objects.filter(email=usr)
         
         if user_exist:
             raise forms.ValidationError(
