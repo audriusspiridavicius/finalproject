@@ -144,3 +144,4 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'caudrius.ctestacccccount99@gmail.com'#sender's email-id
 EMAIL_HOST_PASSWORD = 'qunxxjjtlhnnqido'#password associated with above email-id
 # EMAIL_HOST_PASSWORD = 'ABCDEFGH99zbc!'#password associated with above email-id
+LOGOUT_REDIRECT_URL = 'homepage'
