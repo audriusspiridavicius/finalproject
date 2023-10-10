@@ -64,6 +64,19 @@ img{
 .bi-person::before{
     font-size:25px;
 }
+
+.relative{
+    position: relative;
+}
+.absolute{
+    position: absolute;
+}
+.log_out_link{
+    right: 0px;
+    bottom: -10px;
+    font-size: 12px;
+}
+
 /* categories css */
 
 .category-name{

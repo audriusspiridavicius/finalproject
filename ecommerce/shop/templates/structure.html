@@ -37,7 +37,12 @@
                 {% comment %} <button type="button" class="btn btn-outline-primary me-2">Login</button>
                 <button type="button" class="btn btn-primary">Sign-up</button>  {% endcomment %}
                 {%if user.is_authenticated%}
+                <div class="relative">
                   <a href="{%url 'account'%}" class="account-email">{{user.email}}</a>
+                  <br>
+                  <a href="{%url 'logout'%}" class="font-15 absolute log_out_link">Atsijungti</a>
+                </div>  
+                
                 {%endif%}
                 <a href="{%if user.is_authenticated%}{%url 'account'%}{%else%}{%url 'login'%}{%endif%}" class="padding-top-7">
                   <span class="bi bi-person p-1 pr-0"></span>
@@ -61,39 +66,6 @@
 
           <!-- Footer -->
 <footer class="text-center text-lg-start bg-white text-muted">
-  <!-- Section: Social media -->
-  <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
-    <!-- Left -->
-    <div class="me-5 d-none d-lg-block">
-      <span>Get connected with us on social networks:</span>
-    </div>
-    <!-- Left -->
-
-    <!-- Right -->
-    <div>
-      <a href="" class="me-4 link-secondary">
-        <i class="fab fa-facebook-f"></i>
-      </a>
-      <a href="" class="me-4 link-secondary">
-        <i class="fab fa-twitter"></i>
-      </a>
-      <a href="" class="me-4 link-secondary">
-        <i class="fab fa-google"></i>
-      </a>
-      <a href="" class="me-4 link-secondary">
-        <i class="fab fa-instagram"></i>
-      </a>
-      <a href="" class="me-4 link-secondary">
-        <i class="fab fa-linkedin"></i>
-      </a>
-      <a href="" class="me-4 link-secondary">
-        <i class="fab fa-github"></i>
-      </a>
-    </div>
-    <!-- Right -->
-  </section>
-  <!-- Section: Social media -->
-
   <!-- Section: Links  -->
   <section class="">
     <div class="container text-center text-md-start mt-5">
