@@ -2,7 +2,7 @@
 
 {% block main %}
 
-<div class="flex m-auto">
+<div class="col-12 col-md-6 p-2">
 <form method="post" action="{%url 'login'%}">
   <h2>Prisijungimas</h2>
   {% csrf_token %}
@@ -11,8 +11,15 @@
       <input type="text" id="username" name="username" class="form-control-lg form-control"/>   
     </div>
     <div class="form-group">
+      <br>
       <label for="password">Slaptažodis</label>
       <input type="password" name="password" id="password" class="form-control-lg form-control"/>    
+    </div>
+    <div class="form-group">
+      <br>
+      {% if form.errors %}
+        <p class="alert alert-warning">Elektroninis paštas arba slaptažodis yra neteisingi</p>
+      {% endif %}
     </div>
     <div class="form-group">
       <button name="submit" class="btn btn-outline-secondary">Prisijungti</button>
@@ -20,6 +27,8 @@
     <div class="form-group">
       <span class="no-account">Neturi paskyros?</span>&nbsp;<a href="{%url 'registration'%}">Registruotis</a>
     </div>
+
+
 </form>
 </div>
 {% endblock main %}
