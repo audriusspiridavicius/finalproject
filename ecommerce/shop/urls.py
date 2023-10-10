@@ -29,7 +29,10 @@ urlpatterns = [
      
      path('Registration/confirm/<str:email>/<str:id>',views.confirm_registration, name="confirm_registration"),
      
-     path('registration/successful', views.registration_successful, name='registration_successful')
+     path('registration/successful', views.registration_successful, name='registration_successful'),
+     
+     path('order/', views.OrderView.as_view(), name='order')
+     
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 
 

@@ -10,6 +10,12 @@ from django.conf import settings
 from django.utils.html import strip_tags
 
 from django.core.mail import EmailMessage
+from django.contrib.auth import get_user_model
+# from django.contrib.auth.models import User
+
+# user = get_user_model()
+
+
 # Create your models here.
 
 class ProductQuantity(models.Model):
@@ -41,10 +47,6 @@ class BaseProduct(models.Model):
     
 class Product(BaseProduct):
     
-    # title = models.CharField(max_length=300)
-    # sku = models.CharField(max_length=100, unique=True, null=False, blank=False)
-    # short_description = models.CharField(max_length=1000, blank=True, default="")
-    # price = models.FloatField(null=False, blank=False, default=0.00)
     online = models.BooleanField(default=False)
     
     def __str__(self) -> str:
@@ -118,6 +120,7 @@ class ShoppingBasket(models.Model):
     
     product = models.OneToOneField(Product, on_delete=models.CASCADE, unique=True, null=False)
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
 
 
 class CustomUserManager(BaseUserManager):
@@ -186,6 +189,7 @@ class CustomUser(AbstractUser):
     username = None
     email = models.EmailField(unique=True)
     unique_link_id = models.UUIDField(default=None, null=True)
+    account = models.ForeignKey('Account', on_delete=models.CASCADE, null=True)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
     
@@ -204,6 +208,9 @@ class BaseAddress(models.Model):
 
 class DeliveryAddress(BaseAddress):
    
+   
+   
+   
    pass 
 
 class BillingAddress(BaseAddress):
@@ -215,3 +222,32 @@ class Account(models.Model):
     
     delivery = models.ForeignKey(DeliveryAddress, on_delete=models.SET_NULL, null=True)
     billing = models.ForeignKey(BillingAddress, on_delete=models.SET_NULL, null=True)
+    
+    
+class ModelDate(models.Model):
+    
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_last_modified = models.DateTimeField(auto_now=True)    
+    
+    class Meta:
+        abstract = True
+
+
+    
+class Order(ModelDate):
+    paid_at_Date = models.DateField(null=True)
+    paid = models.BooleanField(default=False)
+    
+    delivery = models.ForeignKey(DeliveryAddress, on_delete=models.PROTECT, null=True)
+    billing = models.ForeignKey(BillingAddress, on_delete=models.PROTECT, null=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.PROTECT)
+    
+    
+    
+    @property
+    def get_order_number(self):
+        return f"ord-{str(self.id).zfill(10)}" 
+    
+class OrderItems(BaseProduct, ModelDate):
+    
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)

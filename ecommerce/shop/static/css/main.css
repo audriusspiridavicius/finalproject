@@ -76,6 +76,19 @@ img{
     bottom: -10px;
     font-size: 12px;
 }
+.btn.btn-outline-dark{
+    background: #0065f9;
+    border: 1px solid #0065f9;
+    border-radius: unset;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    margin: 30px 0px;
+    padding: 15px 0px;
+}
+
+
+
 
 /* categories css */
 
@@ -111,6 +124,17 @@ img{
 #shopping-cart-table .product-image{
     max-width: 200px;
 }
+#shopping-cart-table{
+    width:100%;
+}
+
+.total-price-text{
+    text-align: right;
+    padding: 0px 30px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
 
 
 /* shopping cart end */
@@ -125,4 +149,29 @@ img{
 /* account css end */
 
 
+/* checkout page*/
+.delivery-types .form-check{
+    border: solid 1px #ebebeb;
 
+    margin: 15px 0px;
+}
+.delivery-types .form-check-input[type=radio]{
+    margin: 25px 15px;
+}
+.delivery-types .form-check-label{
+    display: block;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 15px 45px;
+}
+#delivery-info .form-group{
+    margin: 15px 0px;
+}
+#delivery-info label{
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 5px;
+    text-transform: capitalize;
+}
+
+/* checkout end */

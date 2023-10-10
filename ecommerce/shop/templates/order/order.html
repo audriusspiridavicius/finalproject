@@ -1,0 +1,60 @@
+{%extends 'structure.html'%}
+
+
+{% block main %}
+{% load crispy_forms_tags %}
+
+
+    <div class="container">
+        <form action="{%url 'order'%}" method="post" class="m-auto container col-md-12">
+            <div class="row">
+                {% comment %} <h1 class="col-md-12 col-lg-12 text-center">Registracija</h1> {% endcomment %}
+            </div>  
+            <div class="row">
+                <div    
+                    id="shopping-cart" 
+                    class="container" 
+                    hx-trigger="load" 
+                    hx-target="#shopping-cart" 
+                    hx-get="{%url 'shopping_cart_table'%}">
+
+                </div>
+            
+            </div>
+            <div class="row delivery-types">
+                <div class="m-auto container col-md-12">
+                    {% csrf_token %}
+                    <br/>
+                    {{ delivery_type_form|crispy }}
+                </div>
+            
+            </div>
+            <div class="row" id="delivery-info">
+                <h2>Pristatymo informacija</h2>
+                <div class="m-auto container col-md-12">
+                    {% csrf_token %}
+                    {{ delivery_information_form|crispy }}
+                </div>
+            
+            </div>
+            <div class="row delivery-types">
+                <div class="m-auto container col-md-12">
+                    {% csrf_token %}
+                    {{ payment_form|crispy }}
+                    <br/>
+                    {% comment %} <input type="submit" value="Registruotis" class="btn btn-outline-dark"> {% endcomment %}
+                </div>
+            
+            </div>
+
+            <div class="row">
+                <input type="submit" value="Užsakyti" class="btn btn-outline-dark">
+            </div>
+
+        </form>
+    </div>
+      
+
+
+
+{% endblock main %}

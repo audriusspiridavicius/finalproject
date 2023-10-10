@@ -4,6 +4,8 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import EmailValidator
 from django.contrib.auth import get_user_model
+from .models import DeliveryAddress
+
 User = get_user_model()
         
 def validate_password(value):
@@ -90,3 +92,48 @@ class RegistrationForm(forms.ModelForm):
         model = User
         fields = ('email', 'password','password2')
         
+class DeliveryTypeForm(forms.Form):
+    
+    delivery_types = (('dpd', 'dpd' ),
+                      ('venipak', 'venipak' ),
+                      ('delivery3', 'Atsiėmimas parduotuvėje' ),
+                      ('delivery4', 'Atsiėmimas sandelyje' ),
+                      )
+    
+    delivery_type = forms.ChoiceField(
+        choices=delivery_types, 
+        widget=forms.RadioSelect(), 
+        label='Pristatymas')
+    
+    class Meta:
+        fields= ('delivery_type',)
+
+        
+class DeliveryDetailsForm(forms.ModelForm):
+    
+    country = forms.ChoiceField(label="šalis", choices=(('Lietuva','Lietuva'),))
+    city = forms.CharField(label="Miestas")
+    street = forms.CharField(label="Gatvė")
+    house_number = forms.CharField(label="Namo numeris")
+    post_code = forms.CharField(label="Pašto kodas", required=False)
+    other_info = forms.CharField(label="Papildoma informacija", required=False)
+    
+    
+    
+    class Meta:
+        model = DeliveryAddress
+        fields = ('country', 'city','street','house_number','post_code','other_info')
+        
+        
+class PaymnetTypeForm(forms.Form):
+    
+    payment_types = (('cash', 'grynais' ),
+                      )
+    
+    payment_type = forms.ChoiceField(
+        choices=payment_types, 
+        widget=forms.RadioSelect(), 
+        label='Pasirinkite mokėjimo būdą')
+    
+    class Meta:
+        fields= ('payment_type',)
