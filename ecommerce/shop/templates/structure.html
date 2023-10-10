@@ -28,14 +28,9 @@
               <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
                 <li><a href="{%url 'homepage'%}" class="nav-link px-2">Pagrindinis</a></li>
                 <li><a href="{% url 'categories'%}" class="nav-link px-2">Kategorijos</a></li>
-                <li><a href="{% url 'categories'%}" class="nav-link px-2">produktai</a></li>
-                {% comment %} <li><a href="#" class="nav-link px-2">FAQs</a></li>
-                <li><a href="#" class="nav-link px-2">About</a></li> {% endcomment %}
               </ul>
         
               <div class="col-md-6 text-end flex justify-content-end font-20">
-                {% comment %} <button type="button" class="btn btn-outline-primary me-2">Login</button>
-                <button type="button" class="btn btn-primary">Sign-up</button>  {% endcomment %}
                 {%if user.is_authenticated%}
                 <div class="relative">
                   <a href="{%url 'account'%}" class="account-email">{{user.email}}</a>
@@ -58,7 +53,7 @@
               </div>
             </header>
           </div>
-          <div class="flex flex-wrap justify-content-center">
+          <div class="flex">
             {%block main%}
             
             {%endblock main%}
@@ -78,8 +73,9 @@
             <i class="fas fa-gem me-3 text-secondary"></i>Company name
           </h6>
           <p>
-            Here you can use rows and columns to organize your footer content. Lorem ipsum
-            dolor sit amet, consectetur adipisicing elit.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+             Donec suscipit elit vel ornare gravida. Mauris tristique sagittis nisi, in dictum turpis interdum in. Praesent mattis nisi quis velit finibus posuere. Nullam eu justo mattis leo dapibus feugiat. Ut euismod lectus ut maximus maximus. Morbi auctor, nibh eget eleifend ultricies, leo massa laoreet augue, non lacinia dui lorem ac mauris. Suspendisse eget imperdiet risus. Maecenas vel erat vitae metus pulvinar suscipit.
+             Mauris sit amet dictum libero
           </p>
         </div>
         <!-- Grid column -->

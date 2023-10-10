@@ -8,8 +8,9 @@ Pirkiniu krepselis
 
 
 {% block main %}
-
+<div class="flex flex-wrap justify-content-center col-12">
     <div id="shopping-cart" class="container" hx-trigger="load" hx-target="#shopping-cart" hx-get="{%url 'shopping_cart_table'%}">
     </div>
     <a href="{%url 'order' %}" class="btn btn-outline-dark col-10">Pirkti</a>
+</div>
 {% endblock main %}

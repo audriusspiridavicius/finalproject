@@ -47,13 +47,14 @@ class ProductsListView(generic.ListView):
         selected_attributes = self.request.GET.getlist('attr')
         
         my_filter_qs = Q()
+        
         for attribute_value in selected_attributes:
             my_filter_qs = my_filter_qs | Q(value=attribute_value)
         products_attributes = ProductAttributes.objects.filter(my_filter_qs)
         
         
         filtered_products = Product.objects.filter(categories__in=[cat_id], online=True)
-        if products_attributes:
+        if selected_attributes:
             filtered_products = filtered_products.filter(attributes__in=[id for id in products_attributes]).distinct()
 
         return filtered_products
