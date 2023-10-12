@@ -42,6 +42,10 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ['name','picture','online']
     list_editable = ['online']
 
+class CustomUserAdmin(admin.ModelAdmin):
+    model = CustomUser
+    exclude = ['account','unique_link_id']
+
         
 admin.site.register(Product,ProductAdmin)
 admin.site.register(ProductQuantity)
@@ -52,4 +56,4 @@ admin.site.register(ProductLocation)
 admin.site.register(Category, CategoryAdmin)
 
 admin.site.register(ShoppingBasket)
-admin.site.register(CustomUser)
+admin.site.register(CustomUser,CustomUserAdmin)
