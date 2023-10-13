@@ -3,7 +3,7 @@ from django.db.models.query import QuerySet
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import View, generic
-from .models import Product, Category, ProductAttributes, ShoppingBasket, CustomUser
+from .models import Product, Category, ProductAttributes, ShoppingBasket, OrderItems
 from django.db.models import Q
 from django.http import HttpRequest, HttpResponse
 from django.contrib.sessions.models import Session
@@ -15,10 +15,10 @@ from django.contrib import messages
 from .forms import RegistrationForm, DeliveryTypeForm, DeliveryDetailsForm, PaymnetTypeForm
 from django.views.generic.edit import FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Order, BillingAddress, DeliveryAddress
+from .models import Order, BillingAddress, DeliveryAddress, BaseProduct
 from django.contrib.auth import logout
 from django.contrib.auth import get_user_model
-
+from django.forms.models import model_to_dict
 from .helper import CartHelper
 # Create your views here.
 import copy
@@ -259,19 +259,32 @@ class OrderView(FormView):
 
         d=copy.deepcopy(delivery_info.__dict__)
 
-        # need to remove _state ???
+        # why do i need to remove _state ???
         d.pop("_state")
 
         billing = BillingAddress.objects.create(**d)
         user = self.request.user
         if not self.request.user.is_authenticated:
-            user = User.objects.create(email='gdfdfgdfsg@gmail.com')
-            user.is_active = False
+            # user = User.objects.create(email='gdfdfgdfsg@gmail.com')
+            # user.is_active = False
             user.save()
+            # user.create_user insted of line above
         order = Order.objects.create(delivery=delivery_info,billing=billing, user=user )
         
-        # ShoppingBasket.objects.filter(session=self.request.session.session_key).delete()
+        # order_products = ShoppingBasket.objects.filter(session=self.request.session).all().select_related('product').first()
+        order_products = Product.objects \
+        .filter(shopping_basket__session__session_key=self.request.session.session_key) \
+        .all() \
+        .values('title','sku','short_description','price')
+
+        # order_items = model_to_dict(order_products)
+        order_items = []
         
+        for product in order_products:
+            # order_items.append(model_to_dict(product))
+            order_line = OrderItems.objects.create(**product, order=order)
+
+        print(f"order_items = {order_items}")
         
         logout(self.request)
 

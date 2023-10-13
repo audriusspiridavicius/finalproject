@@ -13,6 +13,9 @@ from django.core.mail import EmailMessage
 from django.contrib.auth import get_user_model
 # from django.contrib.auth.models import User
 
+from .manager import OrderManager
+
+
 # user = get_user_model()
 
 
@@ -118,14 +121,15 @@ class ProductAttributes(models.Model):
 
 class ShoppingBasket(models.Model):
     
-    product = models.OneToOneField(Product, on_delete=models.CASCADE, unique=True, null=False)
+    product = models.OneToOneField(Product, on_delete=models.CASCADE, 
+                                   unique=True, null=False, related_name='shopping_basket')
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
 
 
 class CustomUserManager(BaseUserManager):
     
-    def create_user(self, email, password, **extra_fields):
+    def create_user(self, email, password = None, **extra_fields):
         """
         Create and save a user with the given email and password.
         """
@@ -208,9 +212,6 @@ class BaseAddress(models.Model):
 
 class DeliveryAddress(BaseAddress):
    
-   
-   
-   
    pass 
 
 class BillingAddress(BaseAddress):
@@ -231,10 +232,10 @@ class ModelDate(models.Model):
     
     class Meta:
         abstract = True
-
-
     
 class Order(ModelDate):
+    objects = OrderManager()
+    
     paid_at_Date = models.DateField(null=True)
     paid = models.BooleanField(default=False)
     
@@ -242,12 +243,13 @@ class Order(ModelDate):
     billing = models.ForeignKey(BillingAddress, on_delete=models.PROTECT, null=True)
     user = models.ForeignKey(CustomUser, on_delete=models.PROTECT)
     
-    
-    
+
     @property
     def get_order_number(self):
-        return f"ord-{str(self.id).zfill(10)}" 
+        return f"ord-{str(self.id).zfill(10)}"
+     
     
 class OrderItems(BaseProduct, ModelDate):
     
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    sku = models.CharField(max_length=100, unique=False, null=False, blank=False)
