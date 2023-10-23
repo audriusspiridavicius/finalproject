@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from .models import CustomUser, Product, ProductDescription, ProductPrices, ProductQuantity, ProductLocation
 from .models import Category, ProductImages, ProductAttributes, ShoppingBasket
-# Register your models here.
+from .models import Order, OrderItems, DeliveryAddress
 
 
 class ProductAttributesInline(admin.TabularInline):
@@ -46,6 +46,28 @@ class CustomUserAdmin(admin.ModelAdmin):
     model = CustomUser
     exclude = ['account','unique_link_id']
 
+class OrderLines(admin.TabularInline):
+    model = OrderItems
+    min_num = 1
+    extra = 0
+    max_num = 0
+    readonly_fields = ['title', 'price', 'sku']
+    can_delete = False
+    
+
+class DeliveryInline(admin.StackedInline):
+    model = DeliveryAddress
+
+
+class OrderAdmin(admin.ModelAdmin):
+    model = Order
+    inlines = [OrderLines]
+    
+    
+
+
+
+
         
 admin.site.register(Product,ProductAdmin)
 admin.site.register(ProductQuantity)
@@ -57,3 +79,6 @@ admin.site.register(Category, CategoryAdmin)
 
 admin.site.register(ShoppingBasket)
 admin.site.register(CustomUser,CustomUserAdmin)
+
+
+admin.site.register(Order, OrderAdmin)
