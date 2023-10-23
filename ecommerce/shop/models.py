@@ -1,23 +1,16 @@
 from django.db import models
 from django.contrib.sessions.models import Session
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, BaseUserManager, UserManager
-from django.core.mail import send_mail
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 import uuid
 from django.template.loader import render_to_string
 from django.conf import settings
 
-from django.utils.html import strip_tags
 
 from django.core.mail import EmailMessage
-from django.contrib.auth import get_user_model
-# from django.contrib.auth.models import User
+
 
 from .manager import OrderManager
-
-
-# user = get_user_model()
-
 
 # Create your models here.
 
@@ -137,7 +130,11 @@ class CustomUserManager(BaseUserManager):
             raise ValueError("The Email must be set")
         unique_link_id = None
         content = {}
+
         if not extra_fields.get('is_superuser'):
+            extra_fields.setdefault("is_active", False)
+            
+        if not extra_fields.get('is_superuser') and not password is None:
             extra_fields.setdefault("is_active", False)
             unique_link_id = str(uuid.uuid4())
             
@@ -148,14 +145,6 @@ class CustomUserManager(BaseUserManager):
             
             
             content = render_to_string('confirm_registration.html', context=context)
-            # content = strip_tags(content)
-            # eml = EmailMessage(
-            #     subject="confirm registration",
-            #     message=content,
-            #     from_email=settings.EMAIL_HOST_USER,
-            #     recipient_list=[email],
-    
-            # )
             eml = EmailMessage(
                 "confirm registration",
                 content,
@@ -207,8 +196,12 @@ class BaseAddress(models.Model):
     house_number = models.CharField(max_length=10)
     post_code = models.CharField(max_length=10)
     other_info = models.CharField(max_length=1000)
+    
     class Meta:
         abstract = True
+    def __str__(self) -> str:
+        return f"{self.country} - {self.city} - {self.street} - {self.house_number}"
+        
 
 class DeliveryAddress(BaseAddress):
    
@@ -234,6 +227,7 @@ class ModelDate(models.Model):
         abstract = True
     
 class Order(ModelDate):
+    # for now i leave this part unchanged, but will try it later(maybe create order lines when creating order model)
     objects = OrderManager()
     
     paid_at_Date = models.DateField(null=True)
@@ -248,8 +242,9 @@ class Order(ModelDate):
     def get_order_number(self):
         return f"ord-{str(self.id).zfill(10)}"
      
+    def __str__(self) -> str:
+        return self.get_order_number
     
 class OrderItems(BaseProduct, ModelDate):
-    
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     sku = models.CharField(max_length=100, unique=False, null=False, blank=False)

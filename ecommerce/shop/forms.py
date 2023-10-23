@@ -137,3 +137,44 @@ class PaymnetTypeForm(forms.Form):
     
     class Meta:
         fields= ('payment_type',)
+        
+        
+        
+class EmailForm(forms.ModelForm,forms.Form):
+    
+    error_massages = {
+        "required": "Privalomas laukas"
+    }
+    
+    email = forms.CharField(max_length=100,
+                        validators=[EmailValidator("Iveskite teisingo formato elektroninį paštą"), ],
+                        required=True,
+                        error_messages=error_massages
+                        )
+    
+    
+    def clean_email(self):
+        usr_email = self.cleaned_data['email']
+        user_exist = User.objects.filter(email=usr_email).exists()
+        
+        if user_exist:
+            raise forms.ValidationError(
+                    "Toks Vartotojas jau egzistuoja"
+                )
+        return usr_email
+    # def clean(self) -> dict[str, Any]:
+    #     clean_data = super().clean()
+    #     usr = clean_data.get('email')
+        
+        
+        
+    #     user_exist = User.objects.filter(email=usr).exists()
+        
+    #     if user_exist:
+    #         raise forms.ValidationError(
+    #                 "Toks Vartotojas jau egzistuoja"
+    #             )
+        
+    class Meta:
+        model = User
+        fields = ('email',)

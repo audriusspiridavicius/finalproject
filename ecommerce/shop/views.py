@@ -5,20 +5,20 @@ from django.urls import reverse_lazy
 from django.views import View, generic
 from .models import Product, Category, ProductAttributes, ShoppingBasket, OrderItems
 from django.db.models import Q
-from django.http import HttpRequest, HttpResponse
+
 from django.contrib.sessions.models import Session
 from django.views.decorators.http import require_http_methods
 from django.db.models import Sum, Count
-from django.views.generic.edit import FormMixin
 
 from django.contrib import messages
 from .forms import RegistrationForm, DeliveryTypeForm, DeliveryDetailsForm, PaymnetTypeForm
 from django.views.generic.edit import FormView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Order, BillingAddress, DeliveryAddress, BaseProduct
+from .models import Order, BillingAddress
 from django.contrib.auth import logout
 from django.contrib.auth import get_user_model
-from django.forms.models import model_to_dict
+from .forms import EmailForm
+
+
 from .helper import CartHelper
 # Create your views here.
 import copy
@@ -210,7 +210,6 @@ def mini_shopping_basket(request):
     cart = ShoppingBasket.objects.filter(session__session_key=request.session.session_key)
     if cart:
         total = cart.all().select_related().aggregate(total_sum=Sum('product__price'),total_count=Count('product'))
-        print(f" get_total_quantity = {cart_helper.get_total_quantity}")
         total['total_count'] = cart_helper.get_total_quantity
         total['total_sum'] = cart_helper.get_total_price
         
@@ -232,31 +231,45 @@ def registration_successful(request):
 
 
 class OrderView(FormView):
-    
+    template_name = 'order/order.html'
     success_url = '/homepage'
     
     def post(self, request) :
         
-        
         # these not used yet
-        # delivery_type_form = DeliveryTypeForm(request.POST)
-        # payment_type_form = PaymnetTypeForm(request.POST)
-       
+        delivery_type_form = DeliveryTypeForm(request.POST)
+        payment_type_form = PaymnetTypeForm(request.POST)
+        registration_form = EmailForm(request.POST)
         delivery_information_form = DeliveryDetailsForm(request.POST)
-        if delivery_information_form.is_valid():
+        
+        context = {
+        'delivery_type_form':delivery_type_form,
+        'delivery_information_form':delivery_information_form,
+        'payment_form':payment_type_form,
+        'registration_form': registration_form
+        }
+        
+        
+        
+        if delivery_information_form.is_valid() and registration_form.is_valid():
         
             return self.form_valid(request.POST)
+        else:
+            print("dslkjhfldsajdfldsajflkdsalfjdlsakjflksdjafldsaflkjhdskahfk")
+        return render(request,'order/order.html', context=context)
+        # return self.render_to_response(request.POST)
+        # return self.render_to_response(request.POST)
     
     def form_valid(self, form):
 
         # payment_type_form = PaymnetTypeForm(self.request.POST)    
         # delivery_type_form = DeliveryTypeForm(self.request.POST)
         delivery_information_form = DeliveryDetailsForm(self.request.POST)
+        registration_form = EmailForm(self.request.POST)
         
-        
-        
+        #  what is the type of delivery_info?
         delivery_info = delivery_information_form.save()
-
+        print(f"type of delivery_info is {type(delivery_info)}")
         d=copy.deepcopy(delivery_info.__dict__)
 
         # why do i need to remove _state ???
@@ -265,10 +278,12 @@ class OrderView(FormView):
         billing = BillingAddress.objects.create(**d)
         user = self.request.user
         if not self.request.user.is_authenticated:
-            # user = User.objects.create(email='gdfdfgdfsg@gmail.com')
-            # user.is_active = False
-            user.save()
-            # user.create_user insted of line above
+            if registration_form.is_valid():
+                email = registration_form.cleaned_data['email']
+                user = User.objects.create_user(email=email)
+                # user.is_active = False
+                user.save()
+                # user.create_user insted of line above
         order = Order.objects.create(delivery=delivery_info,billing=billing, user=user )
         
         # order_products = ShoppingBasket.objects.filter(session=self.request.session).all().select_related('product').first()
@@ -288,8 +303,6 @@ class OrderView(FormView):
         
         logout(self.request)
 
-        
-        
         return super().form_valid(form)
     
 
@@ -304,10 +317,14 @@ class OrderView(FormView):
             delivery_type_form = DeliveryTypeForm()
             delivery_information_form = DeliveryDetailsForm()
             payment_type_form = PaymnetTypeForm()
+            registration_form = EmailForm()
+            
+            
             context = {
                 'delivery_type_form':delivery_type_form,
                 'delivery_information_form':delivery_information_form,
-                'payment_form':payment_type_form
+                'payment_form':payment_type_form,
+                'registration_form': registration_form
                 }
             return render(request,'order/order.html', context=context)
 
