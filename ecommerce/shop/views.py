@@ -1,23 +1,31 @@
 from typing import Any
-from django.db.models.query import QuerySet
+from django.db import models
+
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import View, generic
-from .models import Product, Category, ProductAttributes, ShoppingBasket, OrderItems
+
+from .models import Account, Product, Category, ProductAttributes, ShoppingBasket, OrderItems
+from .models import Order, BillingAddress
+
 from django.db.models import Q
+from django.db.models import Sum, Count
 
 from django.contrib.sessions.models import Session
 from django.views.decorators.http import require_http_methods
-from django.db.models import Sum, Count
+
 
 from django.contrib import messages
-from .forms import RegistrationForm, DeliveryTypeForm, DeliveryDetailsForm, PaymnetTypeForm
+
 from django.views.generic.edit import FormView
-from .models import Order, BillingAddress
+from django.views.generic import DetailView, CreateView, UpdateView
+
 from django.contrib.auth import logout
 from django.contrib.auth import get_user_model
-from .forms import EmailForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
+from .forms import EmailForm
+from .forms import RegistrationForm, DeliveryTypeForm, DeliveryDetailsForm, PaymnetTypeForm
 
 from .helper import CartHelper
 # Create your views here.
@@ -327,4 +335,27 @@ class OrderView(FormView):
                 'registration_form': registration_form
                 }
             return render(request,'order/order.html', context=context)
+
+
+
+class CustomerAccountView(UpdateView, LoginRequiredMixin):
+    model = Account
+    template_name = 'account/account.html'
+    fields = ['firstname', 'lastname']
+    login_url = '/login'
+    
+    success_url = '/homepage'
+    
+    def get_object(self) :
+        return self.request.user.account
+    
+    def form_valid(self, form):
+       super().form_valid(form)
+       
+       user = self.request.user
+       if not user.account:
+            user.account = self.object
+            user.save()
+       return redirect(self.get_success_url())
+       
 

@@ -1,0 +1,17 @@
+{%extends 'structure.html'%}
+
+
+
+{% block main %}
+
+<div id="account-form">
+    
+    <form method="post" action={%url 'account'%}>
+        {% csrf_token %}
+        {{form.as_p}}
+
+        <input type="submit" value="Issaugoti" class="btn btn-outline-secondary"/>
+    </form>
+</div>
+
+{% endblock main %}

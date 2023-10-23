@@ -25,7 +25,7 @@ urlpatterns = [
      path('cart/mini-shopping-basket',views.mini_shopping_basket, name='mini-shopping-basket'),
 
      path('registration/', views.CustomerRegistrationView.as_view(), name='registration'),
-     path('registration/', views.CustomerRegistrationView.as_view(), name='account'),
+     path('account', views.CustomerAccountView.as_view(), name='account'),
      
      path('Registration/confirm/<str:email>/<str:id>',views.confirm_registration, name="confirm_registration"),
      

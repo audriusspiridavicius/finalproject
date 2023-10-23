@@ -214,8 +214,20 @@ class BillingAddress(BaseAddress):
     
 class Account(models.Model):
     
+    firstname = models.CharField(max_length=50, blank=False, null=True) 
+    lastname =  models.CharField(max_length=100, blank=False, null=True)
+    
+    company = models.ForeignKey("Company", on_delete=models.SET_NULL, null=True)
+    
     delivery = models.ForeignKey(DeliveryAddress, on_delete=models.SET_NULL, null=True)
     billing = models.ForeignKey(BillingAddress, on_delete=models.SET_NULL, null=True)
+
+class Company(models.Model):
+    name = models.CharField(max_length=200, verbose_name="imones pavadinimas")
+    
+    address = models.CharField(max_length=200, verbose_name="imones addresas")
+    
+    company_registration_code = models.CharField(max_length=20, verbose_name="imones kodas")
     
     
 class ModelDate(models.Model):
