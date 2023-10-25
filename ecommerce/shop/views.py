@@ -24,7 +24,7 @@ from django.contrib.auth import logout
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .forms import EmailForm, ProfileFormSet
+from .forms import EmailForm
 from .forms import RegistrationForm, DeliveryTypeForm, DeliveryDetailsForm, PaymnetTypeForm
 
 from .helper import CartHelper
