@@ -5,7 +5,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import View, generic
 
-from .models import Account, Product, Category, ProductAttributes, ShoppingBasket, OrderItems
+from .models import Account, Company, Product, Category, ProductAttributes, ShoppingBasket, OrderItems
 from .models import Order, BillingAddress
 
 from django.db.models import Q
@@ -24,7 +24,7 @@ from django.contrib.auth import logout
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .forms import EmailForm
+from .forms import EmailForm, ProfileFormSet
 from .forms import RegistrationForm, DeliveryTypeForm, DeliveryDetailsForm, PaymnetTypeForm
 
 from .helper import CartHelper
@@ -341,21 +341,38 @@ class OrderView(FormView):
 class CustomerAccountView(UpdateView, LoginRequiredMixin):
     model = Account
     template_name = 'account/account.html'
-    fields = ['firstname', 'lastname']
+    fields = ['firstname','lastname']
     login_url = '/login'
-    
     success_url = '/homepage'
     
     def get_object(self) :
-        return self.request.user.account
+        
+        usr = self.request.user
+        account = usr.account
+        
+        return account
     
     def form_valid(self, form):
-       super().form_valid(form)
+        account = self.object
+        delivery_form = DeliveryDetailsForm(self.request.POST, instance=account.delivery)
+        
+        if not delivery_form.is_valid():
+            return self.form_invalid(form)
+        
+        delivery = delivery_form.save()
+        
+        
+        account.delivery = delivery
+        account.save()
+  
+        return super().form_valid(form)
+      
+    
        
-       user = self.request.user
-       if not user.account:
-            user.account = self.object
-            user.save()
-       return redirect(self.get_success_url())
-       
-
+    def get_context_data(self, **kwargs):
+        data = super(CustomerAccountView, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['delivery_form'] = DeliveryDetailsForm(self.request.POST)
+        else:
+            data['delivery_form'] = DeliveryDetailsForm(instance=self.object.delivery)
+        return data

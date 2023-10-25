@@ -154,13 +154,15 @@ class CustomUserManager(BaseUserManager):
             eml.content_subtype = "html"
             eml.send()
         email = self.normalize_email(email)
-        user = self.model(email=email,unique_link_id=unique_link_id, **extra_fields)
+        
+        account = Account()
+        
+        account.save()
+        
+        user = self.model(email=email,unique_link_id=unique_link_id, account=account, **extra_fields)
         user.set_password(password)
         user.save()
 
-        
-        
-        
         return user
     
     def create_superuser(self, email, password, **extra_fields):
@@ -211,24 +213,24 @@ class BillingAddress(BaseAddress):
    pass 
 
 
-    
+class Company(models.Model):
+    name = models.CharField(max_length=200, verbose_name="imones pavadinimas")
+
+    address = models.CharField(max_length=200, verbose_name="imones addresas")
+
+    company_registration_code = models.CharField(max_length=20, verbose_name="imones kodas")
+
 class Account(models.Model):
     
     firstname = models.CharField(max_length=50, blank=False, null=True) 
     lastname =  models.CharField(max_length=100, blank=False, null=True)
     
-    company = models.ForeignKey("Company", on_delete=models.SET_NULL, null=True)
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True)
     
     delivery = models.ForeignKey(DeliveryAddress, on_delete=models.SET_NULL, null=True)
     billing = models.ForeignKey(BillingAddress, on_delete=models.SET_NULL, null=True)
 
-class Company(models.Model):
-    name = models.CharField(max_length=200, verbose_name="imones pavadinimas")
-    
-    address = models.CharField(max_length=200, verbose_name="imones addresas")
-    
-    company_registration_code = models.CharField(max_length=20, verbose_name="imones kodas")
-    
+
     
 class ModelDate(models.Model):
     

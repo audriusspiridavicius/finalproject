@@ -4,7 +4,9 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import EmailValidator
 from django.contrib.auth import get_user_model
-from .models import DeliveryAddress
+from .models import DeliveryAddress, Account, Company
+
+from django.forms import inlineformset_factory
 
 User = get_user_model()
         
@@ -118,6 +120,12 @@ class DeliveryDetailsForm(forms.ModelForm):
     post_code = forms.CharField(label="Pašto kodas", required=False)
     other_info = forms.CharField(label="Papildoma informacija", required=False)
     
+    def clean_house_number(self):
+        data = self.cleaned_data["house_number"]
+        if not data.isdigit():
+            raise forms.ValidationError("namo numeris privalo buti skaicius")
+        
+        return data
     
     
     class Meta:
