@@ -1,0 +1,14 @@
+
+{% load crispy_forms_tags %}
+
+    <form>
+        {% csrf_token %}
+        <br>
+            {{form|crispy}}
+
+        <input type="button" value="Issaugoti" class="btn btn-outline-secondary"
+        hx-target="#delivery_info"
+        hx-trigger="click"
+        hx-post="{%url 'delivery_info_form_ajax'%}"
+        />
+    </form>

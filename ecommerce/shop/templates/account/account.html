@@ -13,8 +13,10 @@
           <button class="nav-link" id="delivery-tab" data-bs-toggle="tab" 
           data-bs-target="#delivery" 
           type="button" role="tab" 
-          aria-controls="delivery" a
-          ria-selected="false"
+          aria-controls="delivery" aria-selected="false"
+          
+          hx-target="#delivery_info" hx-trigger="click" hx-get="{% url 'delivery_info_form_ajax'%}"
+          
           >Addresas</button>
         
         </li>
@@ -24,34 +26,16 @@
       </ul>
       <div class="tab-content " id="myTabContent">
         <div class="tab-pane fade show active" id="profile_info" role="tabpanel" aria-labelledby="profile-tab">
-            <div id="account-form" class="m-auto">
+            <div id="account-form" class="m-auto" hx-trigger="load" hx-get="{% url 'ajax_account_form' %}" hx-target="#account-form">
                 <br/>
-                <form method="post" action={%url 'account'%}>
-                    {% csrf_token %}
-                    {{form|crispy}}
-                    <br/>
-                    <div id="buy-as-company">
-                        <div class="form-check">
-                            <label class="form-check-label" for="as_company">Imone</label>
-                            <input type="checkbox" name="as_company" class="form-check-input" id="as_company"/>
-                        </div>
-                    </div>
-                    <br>
-                    
-                        {{delivery_form|crispy}}
-                        {% comment %} {% for field in form.visible_fields %}
-                        {{ field }}
-                        {%endfor%} {% endcomment %}
-
-
-                    <input type="submit" value="Issaugoti" class="btn btn-outline-secondary"/>
-                </form>
             </div>
         </div>
 
         <div class="tab-pane fade" id="delivery" role="tabpanel" aria-labelledby="delivery-tab">
-            
+            <div id="delivery_info" hx-target="#delivery_info" hx-trigger="load" hx-get="{% url 'delivery_info_form_ajax'%}">
 
+
+            </div>
 
         </div>
         {% comment %} <div class="tab-pane fade" id="billing" role="tabpanel" aria-labelledby="contact-tab">...</div> {% endcomment %}

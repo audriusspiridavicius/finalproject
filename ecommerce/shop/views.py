@@ -5,7 +5,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import View, generic
 
-from .models import Account, Company, Product, Category, ProductAttributes, ShoppingBasket, OrderItems
+from .models import Account, Company, DeliveryAddress, Product, Category, ProductAttributes, ShoppingBasket, OrderItems
 from .models import Order, BillingAddress
 
 from django.db.models import Q
@@ -338,12 +338,12 @@ class OrderView(FormView):
 
 
 
-class CustomerAccountView(UpdateView, LoginRequiredMixin):
+class CustomerAccountView(LoginRequiredMixin,UpdateView):
     model = Account
     template_name = 'account/account.html'
     fields = ['firstname','lastname']
-    login_url = '/login'
-    success_url = '/homepage'
+    login_url = 'login'
+    success_url = '/account'
     
     def get_object(self) :
         
@@ -376,3 +376,22 @@ class CustomerAccountView(UpdateView, LoginRequiredMixin):
         else:
             data['delivery_form'] = DeliveryDetailsForm(instance=self.object.delivery)
         return data
+    
+class CustomerAccountView_Ajax(CustomerAccountView):
+     template_name = 'ajax/account.html'
+    
+class DeliveryFormView_ajax(UpdateView,FormView):
+    model = DeliveryAddress
+    template_name="ajax/delivery_info_form.html"
+    success_url = 'delivery_info_form'
+    
+    form_class = DeliveryDetailsForm
+    def get_object(self) :
+    
+        usr = self.request.user
+        account = usr.account
+        
+        return account.delivery
+    
+
+    

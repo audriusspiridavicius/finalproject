@@ -1,0 +1,22 @@
+
+{% load crispy_forms_tags %}
+
+    <form method="post" action={%url 'account'%}>
+        {% csrf_token %}
+        {{form|crispy}}
+        <br/>
+        <div id="buy-as-company">
+            <div class="form-check">
+                <label class="form-check-label" for="as_company">Imone</label>
+                <input type="checkbox" name="as_company" class="form-check-input" id="as_company"/>
+            </div>
+        </div>
+        <br>
+            {{delivery_form|crispy}}
+
+        <input type="button" value="Issaugoti" class="btn btn-outline-secondary"
+        hx-target="#account-form"
+        hx-trigger="click"
+        hx-post="{%url 'account'%}"
+        />
+    </form>
