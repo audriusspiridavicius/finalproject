@@ -115,6 +115,14 @@ class ShoppingBasketListView(generic.ListView):
     model = ShoppingBasket
     template_name = 'shoppingbasket.html'
     
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        cart_helper = CartHelper(self.request.session)
+        
+        
+        context["cart_has_items"] = cart_helper.cart_has_items
+        context["total_sum"] = cart_helper.get_total_price
+        return context
 
 class ShoppingBasketTable(generic.ListView):    
     template_name = 'shoppingcarttable.html'

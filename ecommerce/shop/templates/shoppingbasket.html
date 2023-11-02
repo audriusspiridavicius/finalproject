@@ -11,6 +11,12 @@ Pirkiniu krepselis
 <div class="flex flex-wrap justify-content-center col-12">
     <div id="shopping-cart" class="container" hx-trigger="load" hx-target="#shopping-cart" hx-get="{%url 'shopping_cart_table'%}">
     </div>
-    <a href="{%url 'order' %}" class="btn btn-outline-dark col-10">Pirkti</a>
+<<<<<<< Updated upstream
+
+=======
+    {%if cart_has_items%}
+        <a href="{%url 'order' %}" class="btn btn-outline-dark col-10">Pirkti</a>
+    {%endif%}
 </div>
+>>>>>>> Stashed changes
 {% endblock main %}

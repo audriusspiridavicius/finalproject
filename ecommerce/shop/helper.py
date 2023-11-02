@@ -25,3 +25,9 @@ class CartHelper():
             total_price = 0
         
         return total_price
+    
+    @property
+    def cart_has_items(self):
+        
+        cart_items = ShoppingBasket.objects.filter(session__session_key=self.session.session_key).exists()
+        return cart_items
