@@ -21,4 +21,7 @@ class CartHelper():
         total_price = ShoppingBasket.objects \
         .filter(session__session_key=self.session.session_key) \
         .aggregate(total_price=Sum(F("quantity") * F("product__price")))['total_price']
+        if not total_price:
+            total_price = 0
+        
         return total_price

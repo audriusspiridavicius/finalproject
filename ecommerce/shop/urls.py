@@ -25,13 +25,16 @@ urlpatterns = [
      path('cart/mini-shopping-basket',views.mini_shopping_basket, name='mini-shopping-basket'),
 
      path('registration/', views.CustomerRegistrationView.as_view(), name='registration'),
-     path('registration/', views.CustomerRegistrationView.as_view(), name='account'),
+     path('account', views.CustomerAccountView.as_view(), name='account'),
+     path('ajax/account', views.CustomerAccountView_Ajax.as_view(), name='ajax_account_form'),
      
      path('Registration/confirm/<str:email>/<str:id>',views.confirm_registration, name="confirm_registration"),
      
      path('registration/successful', views.registration_successful, name='registration_successful'),
      
-     path('order/', views.OrderView.as_view(), name='order')
+     path('order/', views.OrderView.as_view(), name='order'),
+     
+     path('delivery_info_form', views.DeliveryFormView_ajax.as_view(), name='delivery_info_form_ajax')
      
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 

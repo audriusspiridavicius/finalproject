@@ -6,10 +6,7 @@
 
 
     <div class="container">
-        <form action="{%url 'order'%}" method="post" class="m-auto container col-md-12">
-            <div class="row">
-                {% comment %} <h1 class="col-md-12 col-lg-12 text-center">Registracija</h1> {% endcomment %}
-            </div>  
+        <form action="{%url 'order'%}" method="post" class="m-auto container col-md-12" id="order-confirmation-form">
             <div class="row">
                 <div    
                     id="shopping-cart" 
@@ -21,6 +18,16 @@
                 </div>
             
             </div>
+
+            {%if not user.is_authenticated %}
+                <div class="row">
+                    <div class="m-auto container col-md-12">
+                        {% csrf_token %}
+                        <br/>
+                        {{ registration_form.email|as_crispy_field  }}
+                    </div>
+                </div>
+            {%endif%}
             <div class="row delivery-types">
                 <div class="m-auto container col-md-12">
                     {% csrf_token %}
@@ -42,11 +49,17 @@
                     {% csrf_token %}
                     {{ payment_form|crispy }}
                     <br/>
-                    {% comment %} <input type="submit" value="Registruotis" class="btn btn-outline-dark"> {% endcomment %}
                 </div>
             
             </div>
+            <div class="row">
+                <div class="m-auto container col-md-12">
 
+                    <br/>
+                </div>
+            
+            </div>
+           
             <div class="row">
                 <input type="submit" value="Užsakyti" class="btn btn-outline-dark">
             </div>
