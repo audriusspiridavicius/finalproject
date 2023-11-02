@@ -1,0 +1,33 @@
+from .models import ShoppingBasket
+from django.db.models import F
+from django.db.models import Sum
+class CartHelper():
+    
+    def __init__(self, session):
+        self.session = session    
+    
+    
+    @property
+    def get_total_quantity(self):
+        
+        total_quantity = ShoppingBasket.objects \
+        .filter(session__session_key=self.session.session_key) \
+        .aggregate(total=Sum("quantity"))['total']
+        
+        return total_quantity
+    
+    @property
+    def get_total_price(self):
+        total_price = ShoppingBasket.objects \
+        .filter(session__session_key=self.session.session_key) \
+        .aggregate(total_price=Sum(F("quantity") * F("product__price")))['total_price']
+        if not total_price:
+            total_price = 0
+        
+        return total_price
+    
+    @property
+    def cart_has_items(self):
+        
+        cart_items = ShoppingBasket.objects.filter(session__session_key=self.session.session_key).exists()
+        return cart_items
