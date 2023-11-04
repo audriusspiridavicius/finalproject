@@ -28,31 +28,32 @@
             </div>
         </a>
     {%endfor%}
+    
+    {% load pagination_buttons %}
+    {%pagination_buttons1 products.paginator products.number as page_range%}
 
+    {%if products.paginator.num_pages > 1%}
+    <ul class="pagination col-12">    
+    {% for i in page_range %}
+            {% if products.number == i %}
+                <li class="active page-item">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+            {% else %}
+                {% if i == products.paginator.ELLIPSIS %}
+                    <li class="page-item">
+                        <span class="page-link">{{ products.paginator.ELLIPSIS }}</span>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <button class="page-link" hx-trigger="click" hx-target=".grid-container" hx-get="?page={{ i }}">{{ i }}</button>
+                    </li>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    </ul>
+    {%endif%}
 
-
-
-
-    {% comment %}
-
-    atributai
-    {%for atr in aaaa%}
-        <p>{{atr.property}}-{{atr.value}}</p><br />
-    {%endfor%}
-
-
-    only property
-    {%for atr in only_property%}
-        <p>{{atr}}</p><br />
-    {%endfor%}
-
-
-    only value
-    {%for atr in only_values%}
-       
-        <p>{{atr.property}}-{{atr.value}}</p><br />
-    {%endfor%}
-    dsfjkdsahfkjdsahfkjadhskjfh {% endcomment %}
 
   
 

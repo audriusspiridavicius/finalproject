@@ -6,7 +6,7 @@
 <div class="grid-container flex justify-content-between"
 
     hx-trigger="load"
-    hx-get="{%url 'products' pk=cat_id%}"
+    hx-get="{%url 'products' pk=cat_id%}?page={{page}}"
     hx-target=".grid-container"
 >   
     
