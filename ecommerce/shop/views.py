@@ -4,6 +4,7 @@ from django.db import models
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import View, generic
+from django.core import paginator
 
 from .models import Account, Company, DeliveryAddress, Product, Category, ProductAttributes, ShoppingBasket, OrderItems
 from .models import Order, BillingAddress
@@ -48,12 +49,16 @@ class ProductsListView(generic.ListView):
     template_name = 'products.html'
     model = Product
     context_object_name = "products"    
+    # paginate_by = 2
+    
+    
     
     def get_queryset(self):
         cat_id = self.kwargs['pk']
-        
         selected_attributes = self.request.GET.getlist('attr')
-        
+        page = self.request.GET.get("page")
+        products_per_page = self.request.GET.get("items_per_page",2)
+
         my_filter_qs = Q()
         
         for attribute_value in selected_attributes:
@@ -65,7 +70,13 @@ class ProductsListView(generic.ListView):
         if selected_attributes:
             filtered_products = filtered_products.filter(attributes__in=[id for id in products_attributes]).distinct()
 
-        return filtered_products
+        paging = paginator.Paginator(filtered_products,products_per_page)
+
+        products_page = paging.get_page(page)
+        
+        return products_page
+    
+    
     
 class CategoryProductsView(generic.ListView):
     template_name = 'category_products.html'
@@ -77,8 +88,14 @@ class CategoryProductsView(generic.ListView):
     def get_context_data(self, **kwargs: Any):
         context = super().get_context_data(**kwargs)
         cat_id = self.kwargs['pk']
-        context["cat_id"] = cat_id
+        
+
+        
+        page = self.request.GET.get("page")
         selected_attributes = self.request.GET.getlist('attr')
+        
+        context["cat_id"] = cat_id
+        context["page"] = page
         
         products_in_categorty = Product.objects.filter(categories__in=[cat_id], online=True)
 
@@ -90,7 +107,6 @@ class CategoryProductsView(generic.ListView):
             category_attributes[prop] = \
             [{"value":val['value'], "selected":val['value'] in selected_attributes } for val in property_values if val['property']==prop]
         
-
         
         context['attributes'] =  category_attributes
 
