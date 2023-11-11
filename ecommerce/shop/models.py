@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 import uuid
 from django.template.loader import render_to_string
 from django.conf import settings
-
+from datetime import datetime
 
 from django.core.mail import EmailMessage
 
@@ -13,7 +13,14 @@ from django.core.mail import EmailMessage
 from .manager import OrderManager
 
 # Create your models here.
-
+class ModelDate(models.Model):
+    
+    date_created = models.DateTimeField(auto_now_add=True, null=True)
+    date_last_modified = models.DateTimeField(auto_now=True, null=True)    
+    
+    class Meta:
+        abstract = True
+   
 class ProductQuantity(models.Model):
      
     product = models.ForeignKey("Product", on_delete=models.CASCADE, related_name='itm_quantity')
@@ -31,7 +38,7 @@ class ProductImages(models.Model):
     image_name = models.ImageField(upload_to=settings.PRODUCT_IMAGES_FOLDER)
     product = models.ForeignKey("Product", on_delete=models.CASCADE, related_name='images')
 
-class BaseProduct(models.Model):
+class BaseProduct(ModelDate,models.Model):
     title = models.CharField(max_length=300)
     sku = models.CharField(max_length=100, unique=True, null=False, blank=False)
     short_description = models.CharField(max_length=1000, blank=True, default="")
@@ -230,16 +237,7 @@ class Account(models.Model):
     delivery = models.ForeignKey(DeliveryAddress, on_delete=models.SET_NULL, null=True)
     billing = models.ForeignKey(BillingAddress, on_delete=models.SET_NULL, null=True)
 
-
-    
-class ModelDate(models.Model):
-    
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_last_modified = models.DateTimeField(auto_now=True)    
-    
-    class Meta:
-        abstract = True
-    
+ 
 class Order(ModelDate):
     # for now i leave this part unchanged, but will try it later(maybe create order lines when creating order model)
     objects = OrderManager()
