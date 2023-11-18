@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
-
+from django_filters import rest_framework
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 PRODUCT_IMAGES_FOLDER = os.path.join(BASE_DIR,"shop/static/img/products/")
@@ -33,7 +33,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-CRISPY_TEMPLATE_PACK ='Bootstrap4'
+CRISPY_TEMPLATE_PACK ='bootstrap4'
 # Application definition
 
 INSTALLED_APPS = [
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap4',
     'products_api',
     'rest_framework',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -149,3 +150,7 @@ EMAIL_HOST_PASSWORD = 'qunxxjjtlhnnqido'#password associated with above email-id
 
 # ALLOWED_HOSTS = ['*']
 LOGOUT_REDIRECT_URL = 'homepage'
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
