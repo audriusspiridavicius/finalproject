@@ -1,6 +1,15 @@
+from typing import Any
 from rest_framework import serializers, fields
 from shop.models import Product, Category
 import random
+
+class PositiveNumberValidator:
+    def __call__(self, value):
+        if value <= 0:
+            message = "Price has to be larger than zero"
+            raise serializers.ValidationError(message)
+        
+        
 # class ProductFilteredPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
 #     def get_queryset(self):
 #         request = self.context.get('request', None)
@@ -10,10 +19,19 @@ import random
 #         return queryset.filter()
     
 class CategorySerializer(serializers.ModelSerializer):
+    products = serializers.SlugRelatedField(slug_field='sku', many=True, queryset=Product.objects.all())
+    
+    
     class Meta:
         model = Category
-        # fields = '__all__'
-        exclude = ['products']
+        # exclude = ['products']
+        fields = '__all__'
+    
+    
+    def validate_name(self, value):
+        validation_error_message = "Category name must be at least 5 characters"
+        if len(value) < 5:
+            raise serializers.ValidationError(validation_error_message)
 
 class ProductSerializer(serializers.ModelSerializer):
     
@@ -25,6 +43,7 @@ class ProductSerializer(serializers.ModelSerializer):
     anything_you_like_count = serializers.SerializerMethodField()
     # date_created = fields.DateTimeField(input_formats=['%Y-%m-%dT%H:%M:%S.%fZ'])
     date_created = fields.DateTimeField()
+    price = serializers.DecimalField(max_digits=10, decimal_places=2)
     class Meta:
         model = Product
         # fields = '__all__'
@@ -38,3 +57,5 @@ class ProductSerializer(serializers.ModelSerializer):
         if value <=0:
             raise serializers.ValidationError("Price has to be larger than zero!")
         return value
+
+

@@ -1,9 +1,27 @@
 from django.shortcuts import render
 from rest_framework import generics
-from shop.models import Product
-from .serializers import ProductSerializer
+from shop.models import Product, Category
+from .serializers import ProductSerializer, CategorySerializer
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
+import datetime
+
+class ProductFilterByDate(generics.ListAPIView):
+    serializer_class = ProductSerializer
+    
+    
+    def get_queryset(self):
+        
+        date_from = self.kwargs['date_from']
+        date_to = self.kwargs['date_to']
+        
+        date_to = datetime.datetime.strptime(date_to,'%Y-%m-%d') + datetime.timedelta(days=1)
+        
+        products = Product.objects.filter(date_created__range=[date_from,date_to])
+        
+        
+        return products
+    
 class ProductBySku(generics.ListAPIView):
     serializer_class = ProductSerializer
     
@@ -14,6 +32,7 @@ class ProductBySku(generics.ListAPIView):
         product = Product.objects.filter(sku=sku)
         
         return product
+    
 class ProductByOnlineStatus(generics.ListAPIView):
     serializer_class = ProductSerializer
     
@@ -24,6 +43,7 @@ class ProductByOnlineStatus(generics.ListAPIView):
         products = Product.objects.filter(online=online)
         
         return products
+
 class ProductsList(generics.ListAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
@@ -47,6 +67,7 @@ class ProductsList(generics.ListAPIView):
     #         queryset = queryset.filter(online=filter_by_online)
     #     return queryset
     
+    
 class ProductListCreate(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
@@ -61,3 +82,8 @@ class ProductUpdate(generics.RetrieveUpdateAPIView):
     
     # def perform_create(self, serializer):
     #    serializer.save(categories=[1,2])
+    
+    
+class CategoriesListAdd(generics.ListCreateAPIView):
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()      
