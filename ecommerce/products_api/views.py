@@ -4,6 +4,8 @@ from shop.models import Product, Category
 from .serializers import ProductSerializer, CategorySerializer
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
+from .pagination.largepagination import LargeDataSet
+from .pagination.smallpagination import SmallDataSet
 import datetime
 
 class ProductFilterByDate(generics.ListAPIView):
@@ -49,7 +51,7 @@ class ProductsList(generics.ListAPIView):
     queryset = Product.objects.all()
     # filter_backends = [DjangoFilterBackend]
     filterset_fields = ['sku','online', 'title', 'categories__name']
-    
+    pagination_class = LargeDataSet
     filter_backends = [filters.SearchFilter,DjangoFilterBackend, filters.OrderingFilter]
     search_fields = ['title',]
     ordering = ['sku',]
@@ -86,4 +88,5 @@ class ProductUpdate(generics.RetrieveUpdateAPIView):
     
 class CategoriesListAdd(generics.ListCreateAPIView):
     serializer_class = CategorySerializer
-    queryset = Category.objects.all()      
+    queryset = Category.objects.all()
+    pagination_class = SmallDataSet      
