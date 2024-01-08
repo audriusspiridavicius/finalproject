@@ -50,7 +50,7 @@ class ProductsListView(generic.ListView):
     model = Product
     context_object_name = "products"    
     # paginate_by = 2
-    
+    # paginator_class ???
     
     
     def get_queryset(self):
