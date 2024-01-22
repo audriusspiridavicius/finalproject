@@ -6,6 +6,9 @@ from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from .pagination.largepagination import LargeDataSet
 from .pagination.smallpagination import SmallDataSet
+
+from rest_framework.permissions import IsAuthenticated
+
 import datetime
 
 class ProductFilterByDate(generics.ListAPIView):
@@ -55,6 +58,7 @@ class ProductsList(generics.ListAPIView):
     filter_backends = [filters.SearchFilter,DjangoFilterBackend, filters.OrderingFilter]
     search_fields = ['title',]
     ordering = ['sku',]
+    permission_classes = [IsAuthenticated]
     # filterset_fields = ('sku', 'online')
     # def get_queryset(self):
         
@@ -80,13 +84,17 @@ class ProductUpdate(generics.RetrieveUpdateAPIView):
     queryset = Product.objects.all()
     
     
+    
 
     
     # def perform_create(self, serializer):
     #    serializer.save(categories=[1,2])
     
-    
+
+        
 class CategoriesListAdd(generics.ListCreateAPIView):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
     pagination_class = SmallDataSet      
+    permission_classes = [IsAuthenticated]
+    

@@ -260,3 +260,6 @@ class Order(ModelDate):
 class OrderItems(BaseProduct, ModelDate):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     sku = models.CharField(max_length=100, unique=False, null=False, blank=False)
+    
+    
+    
