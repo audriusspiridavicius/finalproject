@@ -53,11 +53,6 @@ class Product(BaseProduct):
     def __str__(self) -> str:
         return f"{self.title}"
     
-    
-    @property
-    def quantity(self):
-        return self.itm_quantity.order_by('-id').first()
-    
     @property
     def image(self):
         image_url = f"{settings.MEDIA_URL}/img/products/default_no_img.jpg"
