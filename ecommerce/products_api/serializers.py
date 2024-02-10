@@ -1,6 +1,6 @@
 from typing import Any
 from rest_framework import serializers, fields
-from shop.models import Product, Category
+from shop.models import Product, Category, ProductQuantity,ProductLocation
 import random
 
 class PositiveNumberValidator:
@@ -17,6 +17,12 @@ class PositiveNumberValidator:
 #         if not request or not queryset:
 #             return None
 #         return queryset.filter()
+class ProductQuantityLocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductLocation
+        fields = ['location_name','address']
+
+
     
 class CategorySerializer(serializers.ModelSerializer):
     products = serializers.SlugRelatedField(slug_field='sku', many=True, queryset=Product.objects.all())
@@ -33,22 +39,29 @@ class CategorySerializer(serializers.ModelSerializer):
         if len(value) < 5:
             raise serializers.ValidationError(validation_error_message)
 
+class ProductQuantitySerializer(serializers.ModelSerializer):
+    location = ProductQuantityLocationSerializer(read_only=False)
+    
+    class Meta:
+        model = ProductQuantity
+        fields = ['quantity','location']
+
+
 class ProductSerializer(serializers.ModelSerializer):
     
-    # quantity = serializers.ReadOnlyField(source='product.quantity')
-    # categories = CategorySerializer(many=True)
-    # categories = serializers.StringRelatedField(many=True)
-    # categories = serializers.SlugRelatedField(many=True, slug_field='name', read_only=True)
+    product_quantity = ProductQuantitySerializer(read_only=False)
+
     categories = serializers.PrimaryKeyRelatedField(many=True, queryset = Category.objects)
     anything_you_like_count = serializers.SerializerMethodField()
-    # date_created = fields.DateTimeField(input_formats=['%Y-%m-%dT%H:%M:%S.%fZ'])
-    date_created = fields.DateTimeField()
+    date_created = fields.DateTimeField(input_formats=['%Y-%m-%dT%H:%M:%S'])
+    # date_created1 = fields.DateTimeField()
     price = serializers.DecimalField(max_digits=10, decimal_places=2)
     class Meta:
         model = Product
-        # fields = '__all__'
-        fields = ['sku','title','price','online','categories','anything_you_like_count', 'date_created']
-    
+
+        fields = ['sku','title','price','online','categories',
+                  'anything_you_like_count', 'date_created', 'short_description', 'product_quantity']
+
     def get_anything_you_like_count(self, obj):
         return random.randint(0,10)
         
@@ -57,5 +70,40 @@ class ProductSerializer(serializers.ModelSerializer):
         if value <=0:
             raise serializers.ValidationError("Price has to be larger than zero!")
         return value
+    
+    def create(self, validated_data):
+        
+        product_quantity = validated_data.pop('product_quantity')
+        location_data = product_quantity.pop('location')
+        categories = validated_data.pop('categories')
+        
+        product = Product.objects.create(**validated_data)
+        
+        product.categories.set(categories)
+        location = ProductLocation.objects.create(**location_data)
 
+        ProductQuantity.objects.create(product=product,location=location,**product_quantity)
+        
+        return product
+    
+    def update(self, instance, validated_data):
+        
+        product_quantity = validated_data.pop('product_quantity')
+        location_data = product_quantity.pop('location')
+        categories = validated_data.pop('categories')
+        
+        prod = instance
+        prod.categories.set(categories)
+        
+        prod.product_quantity.__dict__.update(**product_quantity)
+        prod.product_quantity.save()
+        
+        prod.product_quantity.location.__dict__.update(**location_data)
+        prod.product_quantity.location.save()
 
+        prod.__dict__.update(validated_data)
+        prod.save()
+        return prod
+        
+        
+    
