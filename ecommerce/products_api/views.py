@@ -76,8 +76,15 @@ class ProductsList(generics.ListAPIView):
     
 class ProductListCreate(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
-    queryset = Product.objects.all()
+    pagination_class = None
+    # Details and limitations
+    # Proper use of cursor based pagination requires a little attention to detail. You'll need to think about what ordering you want the scheme to be applied against. The default is to order by "-created". This assumes that there must be a 'created' timestamp field on the model instances, and will present a "timeline" style paginated view, with the most recently added items first.
 
+    # In other words, you can't have all three of these conditions:
+
+    # Using cursor pagination
+    # ...without specifying an ordering
+    # ...on a model without a created field
 
 class ProductUpdate(generics.RetrieveUpdateAPIView):
     serializer_class = ProductSerializer
