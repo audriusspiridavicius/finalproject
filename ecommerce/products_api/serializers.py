@@ -1,8 +1,27 @@
 from typing import Any
 from rest_framework import serializers, fields
-from shop.models import Product, Category, ProductQuantity,ProductLocation
+from shop.models import Product, Category, ProductQuantity, ProductLocation, ProductImages, \
 import random
 
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = ProductImages
+        fields = [ "type",'product_image']
+        
+        
+    product_image = serializers.SerializerMethodField('get_product_image')
+    def get_product_image(self, obj):
+        
+        print(f"testuuojam {obj.image_name}")
+        print(f"testuuojam {obj}")
+        print(f"testuuojam {obj}")
+        return obj.image_name.url    
+    
+
+        
+        
 class PositiveNumberValidator:
     def __call__(self, value):
         if value <= 0:
@@ -49,22 +68,24 @@ class ProductQuantitySerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     
+    images = ProductImageSerializer(read_only=False, many=True)
     product_quantity = ProductQuantitySerializer(read_only=False)
 
     categories = serializers.PrimaryKeyRelatedField(many=True, queryset = Category.objects)
     anything_you_like_count = serializers.SerializerMethodField()
-    date_created = fields.DateTimeField(input_formats=['%Y-%m-%dT%H:%M:%S'])
-    # date_created1 = fields.DateTimeField()
+
     price = serializers.DecimalField(max_digits=10, decimal_places=2)
     class Meta:
         model = Product
 
         fields = ['sku','title','price','online','categories',
-                  'anything_you_like_count', 'date_created', 'short_description', 'product_quantity']
+                  'anything_you_like_count', 'short_description', 'product_quantity', 'images']
 
     def get_anything_you_like_count(self, obj):
         return random.randint(0,10)
-        
+    
+    # def get_product_image(self, product):
+    #     return product.images.image_name.url    
     def validate_price(self, value):
         
         if value <=0:
@@ -76,6 +97,8 @@ class ProductSerializer(serializers.ModelSerializer):
         product_quantity = validated_data.pop('product_quantity')
         location_data = product_quantity.pop('location')
         categories = validated_data.pop('categories')
+        
+        images = validated_data.pop('images')
         
         product = Product.objects.create(**validated_data)
         
@@ -104,6 +127,15 @@ class ProductSerializer(serializers.ModelSerializer):
         prod.__dict__.update(validated_data)
         prod.save()
         return prod
+
         
         
+    
+class UpdateProductDescriptionSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Product
+        fields = ['short_description']
+        
+
     

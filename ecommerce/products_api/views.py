@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from rest_framework import generics
-from shop.models import Product, Category
-from .serializers import ProductSerializer, CategorySerializer
+from rest_framework import generics, parsers
+from shop.models import Product, Category, Order
+from .serializers import ProductSerializer, CategorySerializer, UpdateProductDescriptionSerializer
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from .pagination.largepagination import LargeDataSet
@@ -76,6 +77,9 @@ class ProductsList(generics.ListAPIView):
     
 class ProductListCreate(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
+    # parser_classes = [parsers.MultiPartParser]
+    # queryset = Product.objects.all()
+    
     pagination_class = None
     # Details and limitations
     # Proper use of cursor based pagination requires a little attention to detail. You'll need to think about what ordering you want the scheme to be applied against. The default is to order by "-created". This assumes that there must be a 'created' timestamp field on the model instances, and will present a "timeline" style paginated view, with the most recently added items first.
@@ -86,11 +90,27 @@ class ProductListCreate(generics.ListCreateAPIView):
     # ...without specifying an ordering
     # ...on a model without a created field
 
+
+    def get_queryset(self):
+        
+        products = Product.objects.filter(online=True)
+        
+        return products
+    
+    
+    
 class ProductUpdate(generics.RetrieveUpdateAPIView):
     serializer_class = ProductSerializer
+    # serializer_class = UpdateProductDescriptionSerializer
     queryset = Product.objects.all()
     
-    
+    # def get_queryset(self):
+        
+    #     pk =  self.kwargs['pk']
+        
+    #     products = Product.objects.filter(id=pk)
+        
+    #     return products
     
 
     

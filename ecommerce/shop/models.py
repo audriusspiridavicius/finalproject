@@ -3,6 +3,7 @@ from django.contrib.sessions.models import Session
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 import uuid
+from django.forms import ValidationError
 from django.template.loader import render_to_string
 from django.conf import settings
 from datetime import datetime
@@ -11,7 +12,7 @@ from django.core.mail import EmailMessage
 
 
 from .manager import OrderManager
-
+from django.utils.translation import gettext_lazy as _
 # Create your models here.
 class ModelDate(models.Model):
     
@@ -21,7 +22,7 @@ class ModelDate(models.Model):
     class Meta:
         abstract = True
    
-class ProductQuantity(models.Model):
+class ProductQuantity(ModelDate, models.Model):
      
     product = models.OneToOneField("Product", on_delete=models.CASCADE, related_name='product_quantity')
     
@@ -31,10 +32,20 @@ class ProductQuantity(models.Model):
 
     def __str__(self) -> str:
         return f"{self.quantity}"
-    
+
+
+
+
 class ProductImages(models.Model):
+    class ProductImageType(models.TextChoices):
+        SIMPLE = "SIMPLE", _("Simple")
+        MAIN = "MAIN", _("Main")
+
+    
     image_name = models.ImageField(upload_to=settings.PRODUCT_IMAGES_FOLDER)
     product = models.ForeignKey("Product", on_delete=models.CASCADE, related_name='images')
+    type = models.CharField(max_length=10, choices=ProductImageType.choices, default=ProductImageType.SIMPLE,)
+    
 
 class BaseProduct(ModelDate,models.Model):
     title = models.CharField(max_length=300)
@@ -61,15 +72,14 @@ class Product(BaseProduct):
             image_url = f"{self.images.first().image_name.url}"
         # return mark_safe(f"<img src='{image_url}' alt='product image' width='100'/>")
         return image_url
-    
 
 class ProductLocation(models.Model):
     location_name = models.CharField(max_length=250)
-    address = models.CharField(max_length=500)    
+    address = models.CharField(max_length=500, default="")    
 
     
 
-class ProductPrices(models.Model):
+class ProductPrices(ModelDate, models.Model):
     
     class PriceTypes(models.TextChoices):
         ONLINE = 'Online', 'Online'
@@ -80,8 +90,6 @@ class ProductPrices(models.Model):
                                   choices=PriceTypes.choices,
                                   default=PriceTypes.ONLINE)
     price = models.DecimalField(decimal_places=2, max_digits=100, )
-    
-    date_created = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return f"{self.price}"
@@ -115,7 +123,7 @@ class ProductAttributes(models.Model):
 class ShoppingBasket(models.Model):
     
     product = models.OneToOneField(Product, on_delete=models.CASCADE, 
-                                   unique=True, null=False, related_name='shopping_basket')
+                                   unique=True, null=False, related_name="shopping_basket")
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
 
@@ -251,7 +259,7 @@ class Order(ModelDate):
         return self.get_order_number
     
 class OrderItems(BaseProduct, ModelDate):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_items")
     sku = models.CharField(max_length=100, unique=False, null=False, blank=False)
     
     
