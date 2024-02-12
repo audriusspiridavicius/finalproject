@@ -1,6 +1,11 @@
 from typing import Any
 from rest_framework import serializers, fields
+<<<<<<< Updated upstream
 from shop.models import Product, Category, ProductQuantity,ProductLocation
+=======
+from shop.models import Product, Category, ProductQuantity, ProductLocation, ProductImages, \
+    Order, OrderItems
+>>>>>>> Stashed changes
 import random
 
 class PositiveNumberValidator:
@@ -107,3 +112,33 @@ class ProductSerializer(serializers.ModelSerializer):
         
         
     
+<<<<<<< Updated upstream
+=======
+class UpdateProductDescriptionSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Product
+        fields = ['short_description']
+        
+
+class OrderItemsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItems
+        fields = ['sku']
+        
+        
+class OrdersSerializer(serializers.ModelSerializer):
+    
+    order_number = serializers.SerializerMethodField()
+    order_items = OrderItemsSerializer(many=True, read_only=True)
+    paid = serializers.CharField(read_only=True)
+    
+    class Meta:
+        model = Order
+        fields = ['order_number', 'paid','order_items']
+    
+    def get_order_number(self, order):
+        return order.get_order_number
+    
+    
+>>>>>>> Stashed changes
