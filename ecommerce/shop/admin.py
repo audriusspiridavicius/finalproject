@@ -22,7 +22,7 @@ class ProductImagesInline(admin.StackedInline):
     
 class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductDescriptionInline,ProductImagesInline,ProductAttributesInline]
-    list_display = ['title', 'sku', 'quantity', 'image', 'online']
+    list_display = ['title', 'sku', 'image', 'online']
     # list_display = ['title', 'sku', 'quantity']
     list_editable = ['online']
     

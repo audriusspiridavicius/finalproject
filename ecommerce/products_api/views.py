@@ -1,14 +1,11 @@
 from django.shortcuts import render
 from rest_framework import generics
-<<<<<<< Updated upstream
-from shop.models import Product, Category
-from .serializers import ProductSerializer, CategorySerializer
-=======
+
 from rest_framework import generics, parsers
 from shop.models import Product, Category, Order
 from .serializers import ProductSerializer, CategorySerializer, UpdateProductDescriptionSerializer
 from .serializers import OrdersSerializer
->>>>>>> Stashed changes
+
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from .pagination.largepagination import LargeDataSet
