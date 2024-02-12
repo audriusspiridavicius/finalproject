@@ -1,6 +1,6 @@
 from typing import Any
 from rest_framework import serializers, fields
-from shop.models import Product, Category, ProductQuantity, ProductLocation, ProductImages, \
+from shop.models import Product, Category, ProductQuantity, ProductLocation, ProductImages
 import random
 
 
