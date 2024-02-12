@@ -1,11 +1,20 @@
 from django.shortcuts import render
 from rest_framework import generics
+<<<<<<< Updated upstream
 from shop.models import Product, Category
 from .serializers import ProductSerializer, CategorySerializer
+=======
+from rest_framework import generics, parsers
+from shop.models import Product, Category, Order
+from .serializers import ProductSerializer, CategorySerializer, UpdateProductDescriptionSerializer
+from .serializers import OrdersSerializer
+>>>>>>> Stashed changes
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from .pagination.largepagination import LargeDataSet
 from .pagination.smallpagination import SmallDataSet
+from rest_framework import viewsets
+
 
 from rest_framework.permissions import IsAuthenticated
 
@@ -104,4 +113,10 @@ class CategoriesListAdd(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     pagination_class = SmallDataSet      
     permission_classes = [IsAuthenticated]
+    
+
+class OrderViewset(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrdersSerializer
+    pagination_class = None
     
