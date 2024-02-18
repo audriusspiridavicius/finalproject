@@ -6,6 +6,9 @@ from shop.models import Product, Category, ProductQuantity, ProductLocation, Pro
 
 import random
 
+from django.db.models import Sum
+
+
 class PositiveNumberValidator:
     def __call__(self, value):
         if value <= 0:
@@ -130,10 +133,11 @@ class OrdersSerializer(serializers.ModelSerializer):
     order_items = OrderItemsSerializer(many=True)
     paid = serializers.CharField(read_only=True)
     number_of_items = serializers.SerializerMethodField()
+    total_quantity = serializers.SerializerMethodField()
     
     class Meta:
         model = Order
-        fields = ['order_number', 'paid', 'order_items']
+        fields = ['order_number', 'paid', 'number_of_items','order_items','total_quantity']
     
     def get_order_number(self, order):
         return order.get_order_number
@@ -141,3 +145,5 @@ class OrdersSerializer(serializers.ModelSerializer):
     def get_number_of_items(self, order):
         return order.order_items.count()
 
+    def get_total_quantity(self, order):
+        return OrderItems.objects.filter(order_id=order.id).aggregate(Sum('quantity'))["quantity__sum"]
