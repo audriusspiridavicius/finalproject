@@ -129,6 +129,7 @@ class OrdersSerializer(serializers.ModelSerializer):
     order_number = serializers.SerializerMethodField()
     order_items = OrderItemsSerializer(many=True)
     paid = serializers.CharField(read_only=True)
+    number_of_items = serializers.SerializerMethodField()
     
     class Meta:
         model = Order
@@ -137,5 +138,6 @@ class OrdersSerializer(serializers.ModelSerializer):
     def get_order_number(self, order):
         return order.get_order_number
     
-    
+    def get_number_of_items(self, order):
+        return order.order_items.count()
 
