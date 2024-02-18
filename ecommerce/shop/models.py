@@ -253,6 +253,7 @@ class Order(ModelDate):
 class OrderItems(BaseProduct, ModelDate):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_items")
     sku = models.CharField(max_length=100, unique=False, null=False, blank=False)
+    quantity = models.IntegerField(null=False, blank=False, default=0)
     
     
     
