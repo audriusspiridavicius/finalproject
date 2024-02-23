@@ -16,13 +16,6 @@ class PositiveNumberValidator:
             raise serializers.ValidationError(message)
         
         
-# class ProductFilteredPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
-#     def get_queryset(self):
-#         request = self.context.get('request', None)
-#         queryset = super(ProductFilteredPrimaryKeyRelatedField, self).get_queryset()
-#         if not request or not queryset:
-#             return None
-#         return queryset.filter()
 class ProductQuantityLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductLocation
@@ -36,7 +29,6 @@ class CategorySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Category
-        # exclude = ['products']
         fields = '__all__'
     
     
@@ -129,11 +121,11 @@ class OrderItemsSerializer(serializers.ModelSerializer):
         
 class OrdersSerializer(serializers.ModelSerializer):
     
-    order_number = serializers.SerializerMethodField()
-    order_items = OrderItemsSerializer(many=True)
-    paid = serializers.CharField(read_only=True)
-    number_of_items = serializers.SerializerMethodField()
-    total_quantity = serializers.SerializerMethodField()
+    order_number = serializers.SerializerMethodField(read_only=True)
+    order_items = OrderItemsSerializer(many=True,read_only=True)
+    paid = serializers.CharField(read_only=False)
+    number_of_items = serializers.SerializerMethodField(read_only=True)
+    total_quantity = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
         model = Order

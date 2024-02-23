@@ -69,7 +69,7 @@ class ProductLocation(models.Model):
 
     
 
-class ProductPrices(models.Model):
+class ProductPrices(ModelDate,models.Model):
     
     class PriceTypes(models.TextChoices):
         ONLINE = 'Online', 'Online'
@@ -81,7 +81,7 @@ class ProductPrices(models.Model):
                                   default=PriceTypes.ONLINE)
     price = models.DecimalField(decimal_places=2, max_digits=100, )
     
-    date_created = models.DateTimeField(auto_now_add=True)
+
     
     def __str__(self):
         return f"{self.price}"

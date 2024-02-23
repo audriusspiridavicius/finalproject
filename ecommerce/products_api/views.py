@@ -58,31 +58,18 @@ class ProductByOnlineStatus(generics.ListAPIView):
 class ProductsList(generics.ListAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
-    # filter_backends = [DjangoFilterBackend]
     filterset_fields = ['sku','online', 'title', 'categories__name']
     pagination_class = LargeDataSet
     filter_backends = [filters.SearchFilter,DjangoFilterBackend, filters.OrderingFilter]
     search_fields = ['title',]
     ordering = ['sku',]
     permission_classes = [IsAuthenticated]
-    # filterset_fields = ('sku', 'online')
-    # def get_queryset(self):
-        
-    #     queryset = Product.objects.all()
-    #     filter_by_sku = self.request.query_params.get('sku', None)
-    #     filter_by_online = self.request.query_params.get('online', None)
-        
-    #     if filter_by_sku:
-    #         queryset = queryset.filter(sku=filter_by_sku)
-            
-    #     if filter_by_online:
-    #         queryset = queryset.filter(online=filter_by_online)
-    #     return queryset
     
     
 class ProductListCreate(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
     pagination_class = None
+    queryset = Product.objects.all()
     # Details and limitations
     # Proper use of cursor based pagination requires a little attention to detail. You'll need to think about what ordering you want the scheme to be applied against. The default is to order by "-created". This assumes that there must be a 'created' timestamp field on the model instances, and will present a "timeline" style paginated view, with the most recently added items first.
 
@@ -95,14 +82,6 @@ class ProductListCreate(generics.ListCreateAPIView):
 class ProductUpdate(generics.RetrieveUpdateAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
-    
-    
-    
-
-    
-    # def perform_create(self, serializer):
-    #    serializer.save(categories=[1,2])
-    
 
         
 class CategoriesListAdd(generics.ListCreateAPIView):
