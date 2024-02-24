@@ -1,3 +1,4 @@
+from typing import Iterable
 from django.db import models
 from django.contrib.sessions.models import Session
 from django.conf import settings
@@ -35,6 +36,22 @@ class ProductQuantity(models.Model):
 class ProductImages(models.Model):
     image_name = models.ImageField(upload_to=settings.PRODUCT_IMAGES_FOLDER)
     product = models.ForeignKey("Product", on_delete=models.CASCADE, related_name='images')
+    main = models.BooleanField(default=False)
+    
+    
+    def save(self, *args, **kwargs) -> None:
+        # self.image_name = f"{settings.STATIC_URL}{self.image_name.url}"
+        existing_images = ProductImages.objects.filter(product_id=self.product_id)
+        if not existing_images:
+            self.main = True
+        
+        
+        return super().save(*args, **kwargs)
+    
+    @property
+    def im_age(self):
+        return f"{settings.STATIC_URL}/{self.image_name}"
+    
 
 class BaseProduct(ModelDate,models.Model):
     title = models.CharField(max_length=300)
@@ -55,12 +72,13 @@ class Product(BaseProduct):
     
     @property
     def image(self):
-        image_url = f"{settings.MEDIA_URL}/img/products/default_no_img.jpg"
-        # print(f"self.images -------------------------------------- {self.images}")
-        if self.images.exists():
-            image_url = f"{self.images.first().image_name.url}"
-        # return mark_safe(f"<img src='{image_url}' alt='product image' width='100'/>")
+        image_url = f"{settings.STATIC_URL}img/products/default_no_img.jpg"
+
+        if self.images.filter(main=True).exists():
+            image_url = f"{self.images.filter(product_id=self.id,main=True)[0].image_name}"
+        
         return image_url
+    
     
 
 class ProductLocation(models.Model):
