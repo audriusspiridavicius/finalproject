@@ -98,14 +98,22 @@ class ProductSerializer(serializers.ModelSerializer):
         location_data = product_quantity.pop('location')
         categories = validated_data.pop('categories')
         
-        images = validated_data.pop('images')
+        # images = validated_data.pop('images')
         
         product = Product.objects.create(**validated_data)
         
         product.categories.set(categories)
-        location = ProductLocation.objects.create(**location_data)
-
-        ProductQuantity.objects.create(product=product,location=location,**product_quantity)
+        # location = ProductLocation.objects.create(**location_data)
+        # location = ProductLocation.objects.bulk_create(location_data)
+        print(type(location_data))
+        print(f"location data = {location_data}")
+        
+        
+        # for selected_location in location_data:
+            # location = ProductLocation.objects.filter(id=selected_location.id)
+            # location = get_object_or_404(ProductLocation, pk=selected_location.id)
+        new_product_quantity = ProductQuantity.objects.create(product=product,location=location_data,**product_quantity)
+        # new_product_quantity.location.set(location_data)
         
         return product
     
