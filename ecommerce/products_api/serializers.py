@@ -69,7 +69,7 @@ class ProductQuantitySerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     
     images = ProductImageSerializer(read_only=False, many=True,allow_null=True, required=False)
-    product_quantity = ProductQuantitySerializer(read_only=False)
+    product_quantity = ProductQuantitySerializer(read_only=False, many=True)
 
     categories = serializers.PrimaryKeyRelatedField(many=True, queryset = Category.objects)
     anything_you_like_count = serializers.SerializerMethodField()
