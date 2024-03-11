@@ -72,7 +72,7 @@ class Product(BaseProduct):
     
     @property
     def image(self):
-        image_url = f"{settings.STATIC_URL}img/products/default_no_img.jpg"
+        image_url = f"img/products/default_no_img.jpg"
 
         if self.images.filter(main=True).exists():
             image_url = f"{self.images.filter(product_id=self.id,main=True)[0].image_name}"
