@@ -145,3 +145,10 @@ class OrdersSerializer(serializers.ModelSerializer):
 
     def get_total_quantity(self, order):
         return OrderItems.objects.filter(order_id=order.id).aggregate(Sum('quantity'))["quantity__sum"]
+
+
+class ProductTitleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product
+        fields = ["title"]

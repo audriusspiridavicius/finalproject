@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include, re_path
 from .views import ProductsList, ProductListCreate, ProductUpdate, ProductBySku, ProductByOnlineStatus, ProductFilterByDate
-from .views import CategoriesListAdd, ProductPriceUpdate
+from .views import CategoriesListAdd, ProductPriceUpdate, ProductTitleUpdateView
 
 from rest_framework.authtoken import views
 
@@ -24,6 +24,8 @@ urlpatterns = [
     re_path('^api/product/(?P<sku>.+)/$', ProductBySku.as_view()),
     re_path('^api/products/online/(?P<online>.+)/$', ProductByOnlineStatus.as_view()),
     path('api/categories',CategoriesListAdd.as_view()),
+    path('api/product/<str:sku>/title', ProductTitleUpdateView.as_view()),
+
 
     # path('api/products/<str:date_from>/<str:date_to>', ProductFilterByDate.as_view()),
     path('api/api-token-auth/', views.obtain_auth_token),

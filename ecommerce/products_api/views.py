@@ -11,11 +11,14 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .pagination.largepagination import LargeDataSet
 from .pagination.smallpagination import SmallDataSet
 from rest_framework import viewsets
-
+from .serializers import ProductTitleSerializer
 
 from rest_framework.permissions import IsAuthenticated
 
 import datetime
+
+from django.shortcuts import get_object_or_404, get_list_or_404
+
 
 class ProductFilterByDate(generics.ListAPIView):
     serializer_class = ProductSerializer
@@ -100,3 +103,21 @@ class ProductPriceUpdate(generics.UpdateAPIView):
     serializer_class = UpdateProductPriceSerializer
     queryset = Product.objects.all()
     pagination_class = None    
+
+class ProductTitleUpdateView(generics.RetrieveUpdateAPIView):
+    serializer_class = ProductTitleSerializer
+    pagination_class = SmallDataSet
+    lookup_field = 'sku'
+
+    def get_queryset(self):
+        
+        sku = self.kwargs['sku']
+        print(f" sku value = {sku}")
+        product = Product.objects.filter(sku=sku)
+
+        # line below is wrong in this case
+        # product = get_object_or_404(Product, sku=sku)
+        # because get_queryset should return queryset and not model type
+
+        return product
+    
