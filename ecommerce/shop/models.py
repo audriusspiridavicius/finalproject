@@ -75,7 +75,10 @@ class Product(BaseProduct):
 
 class ProductLocation(models.Model):
     location_name = models.CharField(max_length=250)
-    address = models.CharField(max_length=500, default="")    
+    address = models.CharField(max_length=500, default="")
+    
+    def __str__(self) -> str:
+        return f"{self.location_name}"
 
     
 
