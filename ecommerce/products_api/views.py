@@ -35,7 +35,7 @@ class ProductFilterByDate(generics.ListAPIView):
     
 class ProductBySku(generics.ListAPIView):
     serializer_class = ProductSerializer
-    
+    pagination_class = None
     def get_queryset(self):
         
         sku =  self.kwargs['sku']
@@ -82,7 +82,7 @@ class ProductListCreate(generics.ListCreateAPIView):
 class ProductUpdate(generics.RetrieveUpdateAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
-
+    pagination_class = None
         
 class CategoriesListAdd(generics.ListCreateAPIView):
     serializer_class = CategorySerializer
@@ -98,4 +98,5 @@ class OrderViewset(viewsets.ModelViewSet):
 
 class ProductPriceUpdate(generics.UpdateAPIView):
     serializer_class = UpdateProductPriceSerializer
-    queryset = Product.objects.all()    
+    queryset = Product.objects.all()
+    pagination_class = None    
