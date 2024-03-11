@@ -68,7 +68,7 @@ class ProductQuantitySerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     
-    images = ProductImageSerializer(read_only=False, many=True)
+    images = ProductImageSerializer(read_only=False, many=True,allow_null=True, required=False)
     product_quantity = ProductQuantitySerializer(read_only=False)
 
     categories = serializers.PrimaryKeyRelatedField(many=True, queryset = Category.objects)
