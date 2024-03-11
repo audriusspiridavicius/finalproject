@@ -59,8 +59,9 @@ class CategorySerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(validation_error_message)
 
 class ProductQuantitySerializer(serializers.ModelSerializer):
-    location = ProductQuantityLocationSerializer(read_only=False)
-    
+    # location = ProductQuantityLocationSerializer(read_only=False)
+    location = serializers.StringRelatedField()
+    quantity = serializers.StringRelatedField()
     class Meta:
         model = ProductQuantity
         fields = ['quantity','location']
