@@ -4,7 +4,7 @@ from rest_framework import generics
 from rest_framework import generics, parsers
 from shop.models import Product, Category, Order
 from .serializers import ProductSerializer, CategorySerializer, UpdateProductDescriptionSerializer
-from .serializers import OrdersSerializer
+from .serializers import OrdersSerializer, UpdateProductPriceSerializer
 
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -95,4 +95,7 @@ class OrderViewset(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrdersSerializer
     pagination_class = None
-    
+
+class ProductPriceUpdate(generics.UpdateAPIView):
+    serializer_class = UpdateProductPriceSerializer
+    queryset = Product.objects.all()    

@@ -1,6 +1,8 @@
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path, include, re_path
 from .views import ProductsList, ProductListCreate, ProductUpdate, ProductBySku, ProductByOnlineStatus, ProductFilterByDate
-from .views import CategoriesListAdd
+from .views import CategoriesListAdd, ProductPriceUpdate
 
 from rest_framework.authtoken import views
 
@@ -17,7 +19,8 @@ router.register(r'orders', OrderViewset, basename='orders')
 urlpatterns = [
     path('api/products', ProductsList.as_view()),
     path('api/products/create', ProductListCreate.as_view()),
-    path('api/<int:pk>/update', ProductUpdate.as_view()),
+    path('api/product/<int:pk>', ProductUpdate.as_view()),
+    path('api/product/<int:pk>/price', ProductPriceUpdate.as_view()),
     re_path('^api/product/(?P<sku>.+)/$', ProductBySku.as_view()),
     re_path('^api/products/online/(?P<online>.+)/$', ProductByOnlineStatus.as_view()),
     path('api/categories',CategoriesListAdd.as_view()),

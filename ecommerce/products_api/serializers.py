@@ -51,8 +51,6 @@ class ProductSerializer(serializers.ModelSerializer):
 
     categories = serializers.PrimaryKeyRelatedField(many=True, queryset = Category.objects)
     anything_you_like_count = serializers.SerializerMethodField()
-    date_created = fields.DateTimeField(input_formats=['%Y-%m-%dT%H:%M:%S'])
-    # date_created1 = fields.DateTimeField()
     price = serializers.DecimalField(max_digits=10, decimal_places=2)
     class Meta:
         model = Product
@@ -111,6 +109,14 @@ class UpdateProductDescriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['short_description']
+
+class UpdateProductPriceSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Product
+        fields = ['price']
+
+
         
 
 class OrderItemsSerializer(serializers.ModelSerializer):

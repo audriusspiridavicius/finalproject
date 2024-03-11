@@ -163,3 +163,5 @@ REST_FRAMEWORK = {
         'products_api.models.BearerTokenAuthentication',
     ]
 }
+
+DATETIME_FORMAT = "YYYY-MM-DDThh:mm:ss"
