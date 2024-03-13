@@ -7,7 +7,8 @@ import uuid
 from django.template.loader import render_to_string
 from django.conf import settings
 from datetime import datetime
-
+from django.db.models import UniqueConstraint
+from django.db.models.functions import Lower
 from django.core.mail import EmailMessage
 
 
@@ -32,6 +33,12 @@ class ProductQuantity(models.Model):
 
     def __str__(self) -> str:
         return f"{self.quantity}"
+    
+    class Meta:
+        # unique_together = ["product", "location"]
+        constraints = [
+            UniqueConstraint(Lower('product'), Lower('location'), name='unique_product_location')
+        ]
     
 class ProductImages(models.Model):
     image_name = models.ImageField(upload_to=settings.PRODUCT_IMAGES_FOLDER)
