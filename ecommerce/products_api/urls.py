@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include, re_path
 from .views import ProductsList, ProductListCreate, ProductUpdate, ProductBySku, ProductByOnlineStatus, ProductFilterByDate
-from .views import CategoriesListAdd, ProductPriceUpdate, ProductTitleUpdateView
+from .views import CategoriesListAdd, ProductPriceUpdate, ProductTitleUpdateView, ProductOnlineStatusUpdateView
 
 from rest_framework.authtoken import views
 
