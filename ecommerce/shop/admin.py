@@ -64,9 +64,19 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = [OrderLines]
     
     
+class ProductQuantityAdmin(admin.ModelAdmin):
+    model = ProductQuantity
+    list_display = ['product_title','product_sku','quantity','location']
 
 
+    def product_title(self,obj):
+        return obj.product.title
 
+    def product_sku(self, obj):
+        return obj.product.sku
+    
+    def location(self, obj):
+        return obj.location.location_name
 
         
 admin.site.register(Product,ProductAdmin)
