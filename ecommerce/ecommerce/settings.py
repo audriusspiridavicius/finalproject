@@ -20,7 +20,7 @@ CATEGORY_IMAGES_FOLDER = os.path.join(BASE_DIR,"shop/static/img/categories/")
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'shop/static/').replace('\\','/')
 
-# MEDIA_URL = '/images/'
+MEDIA_URL = 'images/'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -163,3 +163,5 @@ REST_FRAMEWORK = {
         'products_api.models.BearerTokenAuthentication',
     ]
 }
+
+DATETIME_FORMAT = "YYYY-MM-DDThh:mm:ss"

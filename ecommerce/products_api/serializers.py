@@ -31,6 +31,15 @@ from annoying.functions import get_object_or_None
 
         
         
+
+from shop.models import Product, Category, ProductQuantity, ProductLocation, ProductImages, \
+    Order, OrderItems
+
+import random
+
+from django.db.models import Sum
+
+
 class PositiveNumberValidator:
     def __call__(self, value):
         if value <= 0:
@@ -38,13 +47,6 @@ class PositiveNumberValidator:
             raise serializers.ValidationError(message)
         
         
-# class ProductFilteredPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
-#     def get_queryset(self):
-#         request = self.context.get('request', None)
-#         queryset = super(ProductFilteredPrimaryKeyRelatedField, self).get_queryset()
-#         if not request or not queryset:
-#             return None
-#         return queryset.filter()
 class ProductQuantityLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductLocation
@@ -58,7 +60,6 @@ class CategorySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Category
-        # exclude = ['products']
         fields = '__all__'
     
     
@@ -90,7 +91,6 @@ class ProductSerializer(serializers.ModelSerializer):
 
     categories = serializers.PrimaryKeyRelatedField(many=True, queryset = Category.objects)
     anything_you_like_count = serializers.SerializerMethodField()
-
     price = serializers.DecimalField(max_digits=10, decimal_places=2)
     total_quantity = serializers.SerializerMethodField()
 
@@ -170,8 +170,23 @@ class UpdateProductDescriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['short_description']
+
+class UpdateProductPriceSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Product
+        fields = ['price']
+
+
         
 
+class OrderItemsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItems
+        fields = ['sku']
+        
+        
+class OrdersSerializer(serializers.ModelSerializer):
     
     order_number = serializers.SerializerMethodField(read_only=True)
     order_items = OrderItemsSerializer(many=True,read_only=True)

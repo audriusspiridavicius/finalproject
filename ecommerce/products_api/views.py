@@ -9,10 +9,15 @@ from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from .pagination.largepagination import LargeDataSet
 from .pagination.smallpagination import SmallDataSet
+from rest_framework import viewsets
+from .serializers import ProductTitleSerializer
 
 from rest_framework.permissions import IsAuthenticated
 
 import datetime
+
+from django.shortcuts import get_object_or_404, get_list_or_404
+
 
 class ProductFilterByDate(generics.ListAPIView):
     serializer_class = ProductSerializer
@@ -32,7 +37,7 @@ class ProductFilterByDate(generics.ListAPIView):
     
 class ProductBySku(generics.ListAPIView):
     serializer_class = ProductSerializer
-    
+    pagination_class = None
     def get_queryset(self):
         
         sku =  self.kwargs['sku']
@@ -55,26 +60,12 @@ class ProductByOnlineStatus(generics.ListAPIView):
 class ProductsList(generics.ListAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
-    # filter_backends = [DjangoFilterBackend]
     filterset_fields = ['sku','online', 'title', 'categories__name']
     pagination_class = LargeDataSet
     filter_backends = [filters.SearchFilter,DjangoFilterBackend, filters.OrderingFilter]
     search_fields = ['title','sku',]
     ordering = ['sku',]
     permission_classes = [IsAuthenticated]
-    # filterset_fields = ('sku', 'online')
-    # def get_queryset(self):
-        
-    #     queryset = Product.objects.all()
-    #     filter_by_sku = self.request.query_params.get('sku', None)
-    #     filter_by_online = self.request.query_params.get('online', None)
-        
-    #     if filter_by_sku:
-    #         queryset = queryset.filter(sku=filter_by_sku)
-            
-    #     if filter_by_online:
-    #         queryset = queryset.filter(online=filter_by_online)
-    #     return queryset
     
     
 class ProductListCreate(generics.ListCreateAPIView):
@@ -83,6 +74,7 @@ class ProductListCreate(generics.ListCreateAPIView):
     # queryset = Product.objects.all()
     
     pagination_class = None
+    queryset = Product.objects.all()
     # Details and limitations
     # Proper use of cursor based pagination requires a little attention to detail. You'll need to think about what ordering you want the scheme to be applied against. The default is to order by "-created". This assumes that there must be a 'created' timestamp field on the model instances, and will present a "timeline" style paginated view, with the most recently added items first.
 
