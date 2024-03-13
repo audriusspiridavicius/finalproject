@@ -55,12 +55,13 @@ class ProductQuantityUpdateSerializer(ProductQuantitySerializer,serializers.Mode
 
 class ProductSerializer(serializers.ModelSerializer):
     
-    product_quantity = ProductQuantitySerializer(read_only=False)
+    product_quantity = ProductQuantitySerializer(read_only=False, many=True)
 
     categories = serializers.PrimaryKeyRelatedField(many=True, queryset = Category.objects)
     anything_you_like_count = serializers.SerializerMethodField()
     price = serializers.DecimalField(max_digits=10, decimal_places=2)
     total_quantity = serializers.SerializerMethodField()
+
     class Meta:
         model = Product
 
