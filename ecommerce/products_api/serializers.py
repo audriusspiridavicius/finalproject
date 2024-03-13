@@ -178,3 +178,14 @@ class ProductTitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ["title"]
+
+
+class ProductOnlineStatusSerializer(serializers.ModelSerializer):
+
+    sku = serializers.StringRelatedField(read_only=True)
+    title = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Product
+        fields = ["online","sku", "title"]
+        

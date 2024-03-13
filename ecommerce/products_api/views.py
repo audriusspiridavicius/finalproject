@@ -3,7 +3,7 @@ from rest_framework import generics
 
 from rest_framework import generics, parsers
 from shop.models import Product, Category, Order
-from .serializers import ProductSerializer, CategorySerializer, UpdateProductDescriptionSerializer
+from .serializers import ProductOnlineStatusSerializer, ProductSerializer, CategorySerializer, UpdateProductDescriptionSerializer, ProductUpdateSerializer
 from .serializers import OrdersSerializer, UpdateProductPriceSerializer
 
 from rest_framework import filters
@@ -118,6 +118,16 @@ class ProductTitleUpdateView(generics.RetrieveUpdateAPIView):
         # line below is wrong in this case
         # product = get_object_or_404(Product, sku=sku)
         # because get_queryset should return queryset and not model type
+class ProductOnlineStatusUpdateView(generics.RetrieveUpdateAPIView):
+    serializer_class = ProductOnlineStatusSerializer
+    lookup_field = 'sku'
+    pagination_class = None
+
+    def get_queryset(self):
+        
+        sku = self.kwargs['sku']
+
+        product = Product.objects.filter(sku=sku)
 
         return product
-    
+
