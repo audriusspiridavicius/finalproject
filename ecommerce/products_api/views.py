@@ -64,7 +64,7 @@ class ProductsList(generics.ListAPIView):
     filterset_fields = ['sku','online', 'title', 'categories__name']
     pagination_class = LargeDataSet
     filter_backends = [filters.SearchFilter,DjangoFilterBackend, filters.OrderingFilter]
-    search_fields = ['title',]
+    search_fields = ['title','sku',]
     ordering = ['sku',]
     permission_classes = [IsAuthenticated]
     
