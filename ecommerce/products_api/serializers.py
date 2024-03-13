@@ -42,7 +42,11 @@ class ProductQuantitySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ProductQuantity
-        fields = ['quantity','location']
+    
+class ProductQuantityUpdateSerializer(ProductQuantitySerializer,serializers.ModelSerializer):
+    id = serializers.CharField(write_only=True, validators=[])
+  
+
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -118,6 +122,7 @@ class ProductSerializer(serializers.ModelSerializer):
         return total_quantity_sum
         
 class ProductUpdateSerializer(ProductSerializer):
+    product_quantity = ProductQuantityUpdateSerializer(many=True)
     
 
 class UpdateProductDescriptionSerializer(serializers.ModelSerializer):
