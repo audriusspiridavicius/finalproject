@@ -83,9 +83,11 @@ class ProductListCreate(generics.ListCreateAPIView):
     # ...on a model without a created field
 
 class ProductUpdate(generics.RetrieveUpdateAPIView):
-    serializer_class = ProductSerializer
+    serializer_class = ProductUpdateSerializer
     queryset = Product.objects.all()
     pagination_class = None
+
+
         
 class CategoriesListAdd(generics.ListCreateAPIView):
     serializer_class = CategorySerializer
