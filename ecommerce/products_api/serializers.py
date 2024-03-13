@@ -1,6 +1,10 @@
 from typing import Any
 from rest_framework import serializers, fields
 from shop.models import Product, Category, ProductQuantity, ProductLocation, ProductImages
+from rest_framework.validators import UniqueTogetherValidator
+from shop.models import Product, Category, ProductQuantity, ProductLocation, ProductImages, \
+    Order, OrderItems
+
 import random
 from django.shortcuts import get_object_or_404
 
@@ -19,6 +23,11 @@ class ProductImageSerializer(serializers.ModelSerializer):
         print(f"testuuojam {obj}")
         return obj.image_name.url    
     
+from django.db.models import Sum
+from django.shortcuts import get_object_or_404
+
+from annoying.functions import get_object_or_None
+
 
         
         
@@ -58,13 +67,20 @@ class CategorySerializer(serializers.ModelSerializer):
         if len(value) < 5:
             raise serializers.ValidationError(validation_error_message)
 
+
 class ProductQuantitySerializer(serializers.ModelSerializer):
-    # location = ProductQuantityLocationSerializer(read_only=False)
-    location = serializers.StringRelatedField()
-    quantity = serializers.StringRelatedField()
+    
+    location = ProductQuantityLocationSerializer(read_only=False)
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = ProductQuantity
-        fields = ['quantity','location']
+        fields = ['id','quantity','location']    
+    
+class ProductQuantityUpdateSerializer(ProductQuantitySerializer,serializers.ModelSerializer):
+    id = serializers.CharField(write_only=True, validators=[])
+  
+
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -76,11 +92,15 @@ class ProductSerializer(serializers.ModelSerializer):
     anything_you_like_count = serializers.SerializerMethodField()
 
     price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    total_quantity = serializers.SerializerMethodField()
+
     class Meta:
         model = Product
 
         fields = ['sku','title','price','online','categories',
                   'anything_you_like_count', 'short_description', 'product_quantity', 'images']
+        fields = ['sku','title','price','online','total_quantity','categories',
+                  'anything_you_like_count', 'date_created', 'short_description', 'product_quantity']
 
     def get_anything_you_like_count(self, obj):
         return random.randint(0,10)
@@ -96,49 +116,54 @@ class ProductSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         
         product_quantity = validated_data.pop('product_quantity')
-        location_data = product_quantity.pop('location')
+        
         categories = validated_data.pop('categories')
-        
-        # images = validated_data.pop('images')
-        
         product = Product.objects.create(**validated_data)
-        
         product.categories.set(categories)
-        # location = ProductLocation.objects.create(**location_data)
-        # location = ProductLocation.objects.bulk_create(location_data)
-        print(type(location_data))
-        print(f"location data = {location_data}")
         
-        
-        # for selected_location in location_data:
-            # location = ProductLocation.objects.filter(id=selected_location.id)
-            # location = get_object_or_404(ProductLocation, pk=selected_location.id)
-        new_product_quantity = ProductQuantity.objects.create(product=product,location=location_data,**product_quantity)
-        # new_product_quantity.location.set(location_data)
-        
+        for product_quantity_record in product_quantity:
+            
+            location_data = product_quantity_record.pop('location')
+            location = get_object_or_None(ProductLocation,location_name=location_data.get("location_name"))
+            
+            if not location:
+                location = ProductLocation.objects.create(**location_data)
+            ProductQuantity.objects.create(product=product,location=location,**product_quantity_record)
+
         return product
     
     def update(self, instance, validated_data):
-        
-        product_quantity = validated_data.pop('product_quantity')
-        location_data = product_quantity.pop('location')
+        product_quantity = validated_data.get('product_quantity')
+        prod = instance  
+        for quantity_data in product_quantity:   
+            
+            quantity_record = get_object_or_None(ProductQuantity,id=quantity_data.get("id"))
+            if quantity_record:
+                location_info = quantity_data.get('location') # None if not found
+                location = get_object_or_None(ProductLocation,location_name=location_info['location_name'])
+
+                if location:
+                    location_info.pop('location_name')
+                    location.__dict__.update(**location_info)
+                else:
+                    location = ProductLocation.objects.create(**location_info)
+                    quantity_record.quantity = quantity_data["quantity"]
+                    quantity_record.location = location
+                    quantity_record.save()
+
         categories = validated_data.pop('categories')
-        
-        prod = instance
         prod.categories.set(categories)
         
-        prod.product_quantity.__dict__.update(**product_quantity)
-        prod.product_quantity.save()
-        
-        prod.product_quantity.location.__dict__.update(**location_data)
-        prod.product_quantity.location.save()
-
         prod.__dict__.update(validated_data)
         prod.save()
         return prod
-
+    
+    def get_total_quantity(self, product):
+        total_quantity_sum = product.product_quantity.all().aggregate(Sum("quantity"))
+        return total_quantity_sum
         
-        
+class ProductUpdateSerializer(ProductSerializer):
+    product_quantity = ProductQuantityUpdateSerializer(many=True)
     
 class UpdateProductDescriptionSerializer(serializers.ModelSerializer):
     
@@ -148,3 +173,39 @@ class UpdateProductDescriptionSerializer(serializers.ModelSerializer):
         
 
     
+    order_number = serializers.SerializerMethodField(read_only=True)
+    order_items = OrderItemsSerializer(many=True,read_only=True)
+    paid = serializers.CharField(read_only=False)
+    number_of_items = serializers.SerializerMethodField(read_only=True)
+    total_quantity = serializers.SerializerMethodField(read_only=True)
+    
+    class Meta:
+        model = Order
+        fields = ['order_number', 'paid', 'number_of_items','order_items','total_quantity']
+    
+    def get_order_number(self, order):
+        return order.get_order_number
+    
+    def get_number_of_items(self, order):
+        return order.order_items.count()
+
+    def get_total_quantity(self, order):
+        return OrderItems.objects.filter(order_id=order.id).aggregate(Sum('quantity'))["quantity__sum"]
+
+
+class ProductTitleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product
+        fields = ["title"]
+
+
+class ProductOnlineStatusSerializer(serializers.ModelSerializer):
+
+    sku = serializers.StringRelatedField(read_only=True)
+    title = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Product
+        fields = ["online","sku", "title"]
+        

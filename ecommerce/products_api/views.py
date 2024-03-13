@@ -2,7 +2,9 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework import generics, parsers
 from shop.models import Product, Category, Order
-from .serializers import ProductSerializer, CategorySerializer, UpdateProductDescriptionSerializer
+from .serializers import ProductOnlineStatusSerializer, ProductSerializer, CategorySerializer, UpdateProductDescriptionSerializer, ProductUpdateSerializer
+from .serializers import OrdersSerializer, UpdateProductPriceSerializer
+
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from .pagination.largepagination import LargeDataSet
@@ -57,7 +59,7 @@ class ProductsList(generics.ListAPIView):
     filterset_fields = ['sku','online', 'title', 'categories__name']
     pagination_class = LargeDataSet
     filter_backends = [filters.SearchFilter,DjangoFilterBackend, filters.OrderingFilter]
-    search_fields = ['title',]
+    search_fields = ['title','sku',]
     ordering = ['sku',]
     permission_classes = [IsAuthenticated]
     # filterset_fields = ('sku', 'online')
@@ -100,23 +102,10 @@ class ProductListCreate(generics.ListCreateAPIView):
     
     
 class ProductUpdate(generics.RetrieveUpdateAPIView):
-    serializer_class = ProductSerializer
-    # serializer_class = UpdateProductDescriptionSerializer
+    serializer_class = ProductUpdateSerializer
     queryset = Product.objects.all()
-    
-    # def get_queryset(self):
-        
-    #     pk =  self.kwargs['pk']
-        
-    #     products = Product.objects.filter(id=pk)
-        
-    #     return products
-    
+    pagination_class = None
 
-    
-    # def perform_create(self, serializer):
-    #    serializer.save(categories=[1,2])
-    
 
         
 class CategoriesListAdd(generics.ListCreateAPIView):
@@ -125,3 +114,44 @@ class CategoriesListAdd(generics.ListCreateAPIView):
     pagination_class = SmallDataSet      
     permission_classes = [IsAuthenticated]
     
+
+class OrderViewset(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrdersSerializer
+    pagination_class = None
+
+class ProductPriceUpdate(generics.UpdateAPIView):
+    serializer_class = UpdateProductPriceSerializer
+    queryset = Product.objects.all()
+    pagination_class = None    
+
+class ProductTitleUpdateView(generics.RetrieveUpdateAPIView):
+    serializer_class = ProductTitleSerializer
+    pagination_class = SmallDataSet
+    lookup_field = 'sku'
+
+    def get_queryset(self):
+        
+        sku = self.kwargs['sku']
+        print(f" sku value = {sku}")
+        product = Product.objects.filter(sku=sku)
+
+        # line below is wrong in this case
+        # product = get_object_or_404(Product, sku=sku)
+        # because get_queryset should return queryset and not model type
+
+        return product
+    
+class ProductOnlineStatusUpdateView(generics.RetrieveUpdateAPIView):
+    serializer_class = ProductOnlineStatusSerializer
+    lookup_field = 'sku'
+    pagination_class = None
+
+    def get_queryset(self):
+        
+        sku = self.kwargs['sku']
+
+        product = Product.objects.filter(sku=sku)
+
+        return product
+

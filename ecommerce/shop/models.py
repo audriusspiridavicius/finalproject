@@ -7,7 +7,8 @@ from django.forms import ValidationError
 from django.template.loader import render_to_string
 from django.conf import settings
 from datetime import datetime
-
+from django.db.models import UniqueConstraint
+from django.db.models.functions import Lower
 from django.core.mail import EmailMessage
 
 
@@ -32,10 +33,13 @@ class ProductQuantity(ModelDate, models.Model):
 
     def __str__(self) -> str:
         return f"{self.quantity}"
-
-
-
-
+    
+    class Meta:
+        # unique_together = ["product", "location"]
+        constraints = [
+            UniqueConstraint(Lower('product'), Lower('location'), name='unique_product_location')
+        ]
+    
 class ProductImages(models.Model):
     class ProductImageType(models.TextChoices):
         SIMPLE = "SIMPLE", _("Simple")
@@ -74,11 +78,11 @@ class Product(BaseProduct):
         return image_url
 
 class ProductLocation(models.Model):
-    location_name = models.CharField(max_length=250)
-    address = models.CharField(max_length=500, default="")
-    
+    location_name = models.CharField(max_length=250, )
+    address = models.CharField(max_length=500)
+
     def __str__(self) -> str:
-        return f"{self.location_name}"
+        return self.location_name
 
     
 
