@@ -37,11 +37,15 @@ class CategorySerializer(serializers.ModelSerializer):
         if len(value) < 5:
             raise serializers.ValidationError(validation_error_message)
 
+
 class ProductQuantitySerializer(serializers.ModelSerializer):
-    location = ProductQuantityLocationSerializer(read_only=False)
     
+    location = ProductQuantityLocationSerializer(read_only=False)
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = ProductQuantity
+        fields = ['id','quantity','location']    
     
 class ProductQuantityUpdateSerializer(ProductQuantitySerializer,serializers.ModelSerializer):
     id = serializers.CharField(write_only=True, validators=[])
