@@ -80,7 +80,7 @@ class ProductQuantityAdmin(admin.ModelAdmin):
 
         
 admin.site.register(Product,ProductAdmin)
-admin.site.register(ProductQuantity)
+admin.site.register(ProductQuantity, ProductQuantityAdmin)
 admin.site.register(ProductDescription)
 admin.site.register(ProductPrices)
 admin.site.register(ProductLocation)
