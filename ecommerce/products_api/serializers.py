@@ -52,10 +52,11 @@ class ProductSerializer(serializers.ModelSerializer):
     categories = serializers.PrimaryKeyRelatedField(many=True, queryset = Category.objects)
     anything_you_like_count = serializers.SerializerMethodField()
     price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    total_quantity = serializers.SerializerMethodField()
     class Meta:
         model = Product
 
-        fields = ['sku','title','price','online','categories',
+        fields = ['sku','title','price','online','total_quantity','categories',
                   'anything_you_like_count', 'date_created', 'short_description', 'product_quantity']
 
     def get_anything_you_like_count(self, obj):
@@ -100,8 +101,12 @@ class ProductSerializer(serializers.ModelSerializer):
         prod.__dict__.update(validated_data)
         prod.save()
         return prod
+    
+    def get_total_quantity(self, product):
+        total_quantity_sum = product.product_quantity.all().aggregate(Sum("quantity"))
+        return total_quantity_sum
         
-        
+class ProductUpdateSerializer(ProductSerializer):
     
 
 class UpdateProductDescriptionSerializer(serializers.ModelSerializer):
