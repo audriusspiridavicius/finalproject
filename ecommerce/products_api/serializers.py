@@ -88,20 +88,27 @@ class ProductSerializer(serializers.ModelSerializer):
         return product
     
     def update(self, instance, validated_data):
-        
-        product_quantity = validated_data.pop('product_quantity')
-        location_data = product_quantity.pop('location')
+        product_quantity = validated_data.get('product_quantity')
+        prod = instance  
+        for quantity_data in product_quantity:   
+            
+            quantity_record = get_object_or_None(ProductQuantity,id=quantity_data.get("id"))
+            if quantity_record:
+                location_info = quantity_data.get('location') # None if not found
+                location = get_object_or_None(ProductLocation,location_name=location_info['location_name'])
+
+                if location:
+                    location_info.pop('location_name')
+                    location.__dict__.update(**location_info)
+                else:
+                    location = ProductLocation.objects.create(**location_info)
+                    quantity_record.quantity = quantity_data["quantity"]
+                    quantity_record.location = location
+                    quantity_record.save()
+
         categories = validated_data.pop('categories')
-        
-        prod = instance
         prod.categories.set(categories)
         
-        prod.product_quantity.__dict__.update(**product_quantity)
-        prod.product_quantity.save()
-        
-        prod.product_quantity.location.__dict__.update(**location_data)
-        prod.product_quantity.location.save()
-
         prod.__dict__.update(validated_data)
         prod.save()
         return prod
