@@ -120,6 +120,9 @@ class ProductTitleUpdateView(generics.RetrieveUpdateAPIView):
         # line below is wrong in this case
         # product = get_object_or_404(Product, sku=sku)
         # because get_queryset should return queryset and not model type
+
+        return product
+    
 class ProductOnlineStatusUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = ProductOnlineStatusSerializer
     lookup_field = 'sku'
