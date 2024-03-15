@@ -2,9 +2,9 @@ from django.shortcuts import render
 from rest_framework import generics
 
 from rest_framework import generics, parsers
-from shop.models import Product, Category, Order
+from shop.models import Product, Category, Order, ProductLocation
 from .serializers import ProductOnlineStatusSerializer, ProductSerializer, CategorySerializer, UpdateProductDescriptionSerializer, ProductUpdateSerializer
-from .serializers import OrdersSerializer, UpdateProductPriceSerializer
+from .serializers import OrdersSerializer, UpdateProductPriceSerializer, LocationSerializer
 
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -136,3 +136,7 @@ class ProductOnlineStatusUpdateView(generics.RetrieveUpdateAPIView):
 
         return product
 
+class LocationViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = LocationSerializer
+    queryset = ProductLocation.objects.all()
+    pagination_class = None

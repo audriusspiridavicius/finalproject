@@ -23,23 +23,7 @@ class ModelDate(models.Model):
     class Meta:
         abstract = True
    
-class ProductQuantity(models.Model):
-     
-    product = models.ForeignKey("Product", on_delete=models.CASCADE, related_name='product_quantity')
-    
-    quantity = models.IntegerField()
-    
-    location = models.ForeignKey("ProductLocation", on_delete=models.CASCADE, related_name="product_quantity") 
 
-    def __str__(self) -> str:
-        return f"{self.quantity}"
-    
-    class Meta:
-        # unique_together = ["product", "location"]
-        constraints = [
-            UniqueConstraint(Lower('product'), Lower('location'), name='unique_product_location')
-        ]
-    
 class ProductImages(models.Model):
     image_name = models.ImageField(upload_to=settings.PRODUCT_IMAGES_FOLDER)
     product = models.ForeignKey("Product", on_delete=models.CASCADE, related_name='images')
@@ -86,7 +70,23 @@ class Product(BaseProduct):
         
         return image_url
     
+class ProductQuantity(models.Model):
     
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_quantity')
+
+    quantity = models.IntegerField()
+
+    location = models.ForeignKey("ProductLocation", on_delete=models.CASCADE, related_name="productquantity") 
+
+    def __str__(self) -> str:
+        return f"{self.quantity}"
+
+    class Meta:
+        # unique_together = ["product", "location"]
+        constraints = [
+            UniqueConstraint(Lower('product'), Lower('location'), name='unique_product_location')
+        ]
+        
 
 class ProductLocation(models.Model):
     location_name = models.CharField(max_length=250, )

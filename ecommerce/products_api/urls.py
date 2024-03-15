@@ -7,13 +7,14 @@ from .views import CategoriesListAdd, ProductPriceUpdate, ProductTitleUpdateView
 from rest_framework.authtoken import views
 
 from rest_framework.routers import DefaultRouter
-from .views import OrderViewset
+from .views import OrderViewset, LocationViewSet
 
 
 
 router = DefaultRouter()
 
-router.register(r'orders', OrderViewset, basename='orders')
+router.register(r'api/orders', OrderViewset, basename='orders')
+router.register(r'api/locations', LocationViewSet, basename='locations')
 
 
 urlpatterns = [

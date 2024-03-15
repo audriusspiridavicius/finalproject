@@ -5,7 +5,7 @@ from shop.models import Product, Category, ProductQuantity, ProductLocation, Pro
 
 import random
 
-from django.db.models import Sum
+from django.db.models import Sum, Count
 
 from annoying.functions import get_object_or_None
 
@@ -189,4 +189,47 @@ class ProductOnlineStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ["online","sku", "title"]
+
+
+class LocationSerializer(serializers.ModelSerializer):
+
+    products_count = serializers.SerializerMethodField("get_location_products_count")
+    products = serializers.SerializerMethodField("get_location_products")
+
+
+    class Meta:
+        model = ProductLocation
+        fields = ["id", "location_name", "address", "products_count", "products"]
+
+
+    def get_location_products_count(self, location):
+
+        products_count = location.productquantity.all().aggregate(count=Count("product_id")).get('count')
+        return products_count
+
+    def get_location_products(self, location):
+
+        # products = Product.objects.filter(product_quantity__location_id=location.id).select_related("product")
+        locations = ProductLocation.objects.prefetch_related("productquantity")
+
+        print(locations)
+        for loc in locations:
+           
+            for quantity in location.productquantity.prefetch_related("product").all():
+                 print(f"quantity123 = {loc.id} - {loc.location_name} - {quantity.id}: - {quantity.quantity}")
+            
+            # print(f"loc = {loc.location} ")
+
+
+
+        # productquantitys = ProductQuantity.objects.prefetch_related("location")
+
+        # print(locations)
+        # for loc in productquantitys.all():
+        #     print(f"loc = {loc.id} - {loc.quantity} - {loc.location.location_name}")
+        #     print(f"loc = {loc.location} ")
+
+
+
         
+        return locations.__dict__
