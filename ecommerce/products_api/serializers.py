@@ -129,7 +129,7 @@ class ProductSerializer(ProductSerializerBasicData):
         return prod
     
     def get_total_quantity(self, product):
-        total_quantity_sum = product.product_quantity.all().aggregate(Sum("quantity"))
+        total_quantity_sum = product.product_quantity.all().aggregate(Sum("quantity"))["quantity__sum"] or 0
         return total_quantity_sum
         
 class ProductUpdateSerializer(ProductSerializer):
@@ -222,5 +222,4 @@ class LocationSerializer(serializers.ModelSerializer):
         products = Product.objects.filter(product_quantity__location=location).all()
 
         products_data = ProductSerializerBasicData(products, many=True, read_only=True)
-        products_data.sa
         return products_data.data
