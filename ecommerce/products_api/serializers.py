@@ -209,27 +209,13 @@ class LocationSerializer(serializers.ModelSerializer):
 
     def get_location_products(self, location):
 
-        # products = Product.objects.filter(product_quantity__location_id=location.id).select_related("product")
-        locations = ProductLocation.objects.prefetch_related("productquantity")
-
-        print(locations)
-        for loc in locations:
-           
-            for quantity in location.productquantity.prefetch_related("product").all():
-                 print(f"quantity123 = {loc.id} - {loc.location_name} - {quantity.id}: - {quantity.quantity}")
-            
-            # print(f"loc = {loc.location} ")
-
-
-
-        # productquantitys = ProductQuantity.objects.prefetch_related("location")
-
-        # print(locations)
-        # for loc in productquantitys.all():
-        #     print(f"loc = {loc.id} - {loc.quantity} - {loc.location.location_name}")
-        #     print(f"loc = {loc.location} ")
-
-
-
         
-        return locations.__dict__
+        # productquantities = location.productquantity.all().select_related("product")
+        # products = [quantity.product for quantity in productquantities]
+        # products = Product.objects.prefetch_related("product_quantity")
+        # products = products.filter(product_quantity__location=location).all()
+        products = Product.objects.filter(product_quantity__location=location).all()
+
+        products_data = ProductSerializerBasicData(products, many=True, read_only=True)
+        products_data.sa
+        return products_data.data
