@@ -136,7 +136,7 @@ class ProductOnlineStatusUpdateView(generics.RetrieveUpdateAPIView):
 
         return product
 
-class LocationViewSet(viewsets.ReadOnlyModelViewSet):
+class LocationViewSet(viewsets.ModelViewSet):
     serializer_class = LocationSerializer
     queryset = ProductLocation.objects.all()
     pagination_class = None
