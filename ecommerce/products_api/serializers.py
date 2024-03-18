@@ -51,16 +51,21 @@ class ProductQuantitySerializer(serializers.ModelSerializer):
 class ProductQuantityUpdateSerializer(ProductQuantitySerializer,serializers.ModelSerializer):
     id = serializers.CharField(write_only=True, validators=[])
   
+class ProductSerializerBasicData(serializers.ModelSerializer):
+    price = serializers.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        model = Product
+        fields = ['sku','title','price','online', 'date_created', 'short_description']
 
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductSerializer(ProductSerializerBasicData):
     
     product_quantity = ProductQuantitySerializer(read_only=False, many=True)
 
     categories = serializers.PrimaryKeyRelatedField(many=True, queryset = Category.objects)
     anything_you_like_count = serializers.SerializerMethodField()
-    price = serializers.DecimalField(max_digits=10, decimal_places=2)
     total_quantity = serializers.SerializerMethodField()
 
     class Meta:
