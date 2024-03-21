@@ -3,7 +3,7 @@ from rest_framework import generics
 
 from rest_framework import generics, parsers
 from shop.models import Product, Category, Order, ProductLocation
-from .serializers import ProductOnlineStatusSerializer, ProductSerializer, CategorySerializer, UpdateProductDescriptionSerializer, ProductUpdateSerializer
+from .serializers import OrderSerializer2, ProductOnlineStatusSerializer, ProductSerializer, CategorySerializer, UpdateProductDescriptionSerializer, ProductUpdateSerializer
 from .serializers import OrdersSerializer, UpdateProductPriceSerializer, LocationSerializer
 
 from rest_framework import filters
@@ -14,11 +14,12 @@ from rest_framework import viewsets
 from .serializers import ProductTitleSerializer
 
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 import datetime
 
 from django.shortcuts import get_object_or_404, get_list_or_404
-
+from rest_framework.request import Request
 
 class ProductFilterByDate(generics.ListAPIView):
     serializer_class = ProductSerializer
@@ -97,14 +98,63 @@ class CategoriesListAdd(generics.ListCreateAPIView):
     
 
 class OrderViewset(viewsets.ModelViewSet):
+# example code below
+# filters.py
+# class CustomFilter(filters.BaseFilterBackend):
+#     def filter_queryset(self, request, queryset, view):
+#         if view.action == 'list':
+#             # here's additional filtering of queryset
+#             return queryset
+    
+# views.py
+# class EventViewSet(ViewSet):
+#     filter_backends = [CustomFilter]
+#     serializer_class = MySerializer
+ 
+#     def list(self, request):
+#         raw_queryset = MyModel.objects.all()
+#         filtered_queryset = # here's should be called filter from filter_backends 
+#         serializer = MySerializer(filtered_queryset , many=True)
+#         return Response(serializer.data)
+
     queryset = Order.objects.all()
     serializer_class = OrdersSerializer
     pagination_class = None
+    
+    def list(self, request:Request):
+        self.serializer_class = OrdersSerializer
+        
+        # query_params = dict(request.query_params)
+        
+        order_list = Order.objects.all()
+
+        order_serializer = OrdersSerializer(order_list, many=True)
+
+        return Response(order_serializer.data)
+    
+    def retrieve(self, request, pk=None):
+        self.serializer_class = OrderSerializer2
+
+        
+        order = Order.objects.filter(id=pk).first()
+
+        order_serializer = OrderSerializer2(order)
+        
+        return Response(order_serializer.data)
+    
+    def create(self, request:Request):
+
+        print(f"create request data = {request.data}")
+
+
+
+        return super().create(request)
 
 class ProductPriceUpdate(generics.UpdateAPIView):
     serializer_class = UpdateProductPriceSerializer
     queryset = Product.objects.all()
     pagination_class = None    
+
 
 class ProductTitleUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = ProductTitleSerializer
@@ -140,3 +190,4 @@ class LocationViewSet(viewsets.ModelViewSet):
     serializer_class = LocationSerializer
     queryset = ProductLocation.objects.all()
     pagination_class = None
+    

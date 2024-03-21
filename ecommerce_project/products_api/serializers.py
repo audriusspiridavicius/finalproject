@@ -1,7 +1,7 @@
 from typing import Any
 from rest_framework import serializers
 from shop.models import Product, Category, ProductQuantity, ProductLocation, ProductImages, \
-    Order, OrderItems
+    Order, OrderItems, CustomUser
 
 import random
 
@@ -150,24 +150,58 @@ class UpdateProductPriceSerializer(serializers.ModelSerializer):
 
 
         
+class UserSerializer(serializers.ModelSerializer):
+
+
+    class Meta:
+        model = CustomUser
+        fields = ["email","id"]
+
 
 class OrderItemsSerializer(serializers.ModelSerializer):
+    
+
+    order = serializers.PrimaryKeyRelatedField(queryset=Order.objects.all(), required=False)
+    # order = serializers.SlugRelatedField(many=False, queryset=Order.objects.all(), slug_field="id")
+    # order_id = serializers.SlugRelatedField(many=False, queryset=Order.objects.all(), slug_field="id")
+    # required=False
+    
     class Meta:
         model = OrderItems
-        fields = ['sku']
+        fields = ['sku', 'title', 'quantity', 'price','short_description', "order"]
+        list_serializer_class = "OrderItemListSerializer"
+
+    def create(self, validated_data):
+        print(f"OrderItemsSerializer create validated_data = {validated_data}")
+        order = validated_data.get("order", None)
+        order_number = 0
+        if order:
+            order_number = order.id
+        sku = validated_data.get("sku",None)
+
+        item_exist_for_order = OrderItems.objects.filter(sku=sku, order_id=order_number).exists() 
+        if not item_exist_for_order:
+            # self.errors["dsfsdafdsaf"] = {"fdadsfdsaf":"dfdsfdsafdsafadsf"}
+            # validated_data["error"] = {"message": f"Such product (sku={sku}) already exists on order {order_number}"}
+            # return {"message": f"Such product (sku={sku}) already exists on order {order_number}"}
+            # raise serializers.ValidationError()
+            # return {"message": f"Such product ({sku}) already exists on order {order_number}"}
+            return super().create(validated_data)    
         
         
 class OrdersSerializer(serializers.ModelSerializer):
     
     order_number = serializers.SerializerMethodField(read_only=True)
-    order_items = OrderItemsSerializer(many=True,read_only=True)
-    paid = serializers.CharField(read_only=False)
+    order_items = OrderItemsSerializer(many=True,read_only=False)
+    paid = serializers.BooleanField(default=False)
     number_of_items = serializers.SerializerMethodField(read_only=True)
     total_quantity = serializers.SerializerMethodField(read_only=True)
-    
+    # user = UserSerializer(read_only=True)
+
+
     class Meta:
         model = Order
-        fields = ['order_number', 'paid', 'number_of_items','order_items','total_quantity']
+        fields = ['order_number', 'paid', 'number_of_items','order_items','total_quantity', "user"]
     
     def get_order_number(self, order):
         return order.get_order_number
@@ -177,7 +211,64 @@ class OrdersSerializer(serializers.ModelSerializer):
 
     def get_total_quantity(self, order):
         return OrderItems.objects.filter(order_id=order.id).aggregate(Sum('quantity'))["quantity__sum"]
+    
+    def __remove_related_data(self,validated_data, related_field):
 
+        return validated_data.pop(related_field)
+
+
+    def update(self, instance, validated_data):
+        
+        order_items = self.__remove_related_data(validated_data,"order_items")
+
+        # need this because order equals not to id but order model object
+        order_items = [dict(item, order=instance.id) for item in order_items]
+
+        
+
+        existing_order_lines = OrderItems.objects.filter(order_id=instance.id).all()
+
+        orderlines = OrderItemsSerializer(instance=existing_order_lines,many=True, data=order_items)
+        
+        if orderlines.is_valid():
+            orderlines.save()
+        else:
+            raise serializers.ValidationError({'message': orderlines.errors})
+        
+        return super().update(instance, validated_data)
+
+    def create(self, validated_data):
+        order_items = self.__remove_related_data(validated_data,"order_items")
+        created_order = super().create(validated_data)
+        print(f"created_order = {created_order}")
+        
+
+
+        # need this because order equals not to id but order model object
+        order_items = [dict(item, order=created_order.id) for item in order_items]
+
+        order_lines = OrderItemsSerializer(data=order_items, many=True)
+        
+        print(f"Order create validated_data = {validated_data}")
+        
+        # OrderItemsSerializer.create(order_lines,order_items)
+        if order_lines.is_valid():
+            order_lines.save()
+        else:
+            raise serializers.ValidationError({'message': order_lines.errors})
+        
+        
+        return created_order
+    
+
+
+
+
+class OrderSerializer2(OrdersSerializer):
+
+    class Meta:
+        model = Order
+        fields = ['id','user','order_items']
 
 class ProductTitleSerializer(serializers.ModelSerializer):
 
@@ -223,3 +314,9 @@ class LocationSerializer(serializers.ModelSerializer):
 
         products_data = ProductSerializerBasicData(products, many=True, read_only=True)
         return products_data.data
+
+
+class OrderItemListSerializer(serializers.ListSerializer):
+    
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)
