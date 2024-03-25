@@ -285,3 +285,10 @@ class OrderItems(BaseProduct, ModelDate):
     
     
     
+# class CategoryProducts(models.Model):
+#     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="categories")
+#     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="products")
+
+#     constraints = [
+#         UniqueConstraint(fields=["product", "category"], name="unique_category_product")
+#     ]
