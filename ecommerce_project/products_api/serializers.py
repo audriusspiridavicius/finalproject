@@ -157,6 +157,38 @@ class UserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ["email","id"]
 
+class OrderItemListSerializer(serializers.ListSerializer):
+    
+    
+    # instance - list of existing order item records in database
+    # validated_data - list of new order item data 
+    
+    def update(self, instance, validated_data):
+        
+        update_error = []       
+        for order_line_update in validated_data:
+
+            sku = order_line_update.get("sku",None)
+            order_id = order_line_update.get("order",None).id
+            existing_order_line = [orderitem for orderitem in instance if orderitem.sku==sku and orderitem.order_id==order_id]
+
+            if existing_order_line:
+
+                existing_order_line = existing_order_line[0]
+
+                existing_order_line.__dict__.update(order_line_update)
+                existing_order_line.save()
+            else:
+
+                order_line_update["error"] = f"record was not found. sku={sku}, order id={order_id}"
+                update_error.append(order_line_update)
+
+        if update_error:
+            update_error.insert(0,{"errors count":len(update_error)})
+            # raise serializers.ValidationError(update_error)
+        
+        return instance
+    
 
 class OrderItemsSerializer(serializers.ModelSerializer):
     
@@ -169,7 +201,7 @@ class OrderItemsSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItems
         fields = ['sku', 'title', 'quantity', 'price','short_description', "order"]
-        list_serializer_class = "OrderItemListSerializer"
+        list_serializer_class = OrderItemListSerializer
 
     def create(self, validated_data):
         print(f"OrderItemsSerializer create validated_data = {validated_data}")
