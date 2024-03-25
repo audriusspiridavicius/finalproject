@@ -1,8 +1,8 @@
-from typing import Any
-from rest_framework import serializers
-from shop.models import Product, Category, ProductQuantity, ProductLocation, ProductImages, \
-    Order, OrderItems, CustomUser
+from shop.models import Product, Category, ProductQuantity, ProductLocation, ProductImages, Order, OrderItems, CustomUser
 
+from rest_framework import serializers
+
+import uuid 
 import random
 
 from django.db.models import Sum, Count
@@ -21,7 +21,6 @@ class ProductQuantityLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductLocation
         fields = ['location_name','address']
-
 
     
 class CategorySerializer(serializers.ModelSerializer):
@@ -48,16 +47,17 @@ class ProductQuantitySerializer(serializers.ModelSerializer):
         model = ProductQuantity
         fields = ['id','quantity','location']    
     
+
 class ProductQuantityUpdateSerializer(ProductQuantitySerializer,serializers.ModelSerializer):
     id = serializers.CharField(write_only=True, validators=[])
   
+
 class ProductSerializerBasicData(serializers.ModelSerializer):
     price = serializers.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
         model = Product
         fields = ['sku','title','price','online', 'date_created', 'short_description']
-
 
 
 class ProductSerializer(ProductSerializerBasicData):
@@ -194,9 +194,6 @@ class OrderItemsSerializer(serializers.ModelSerializer):
     
 
     order = serializers.PrimaryKeyRelatedField(queryset=Order.objects.all(), required=False)
-    # order = serializers.SlugRelatedField(many=False, queryset=Order.objects.all(), slug_field="id")
-    # order_id = serializers.SlugRelatedField(many=False, queryset=Order.objects.all(), slug_field="id")
-    # required=False
     
     class Meta:
         model = OrderItems
@@ -204,20 +201,15 @@ class OrderItemsSerializer(serializers.ModelSerializer):
         list_serializer_class = OrderItemListSerializer
 
     def create(self, validated_data):
-        print(f"OrderItemsSerializer create validated_data = {validated_data}")
         order = validated_data.get("order", None)
         order_number = 0
+
         if order:
             order_number = order.id
         sku = validated_data.get("sku",None)
 
         item_exist_for_order = OrderItems.objects.filter(sku=sku, order_id=order_number).exists() 
         if not item_exist_for_order:
-            # self.errors["dsfsdafdsaf"] = {"fdadsfdsaf":"dfdsfdsafdsafadsf"}
-            # validated_data["error"] = {"message": f"Such product (sku={sku}) already exists on order {order_number}"}
-            # return {"message": f"Such product (sku={sku}) already exists on order {order_number}"}
-            # raise serializers.ValidationError()
-            # return {"message": f"Such product ({sku}) already exists on order {order_number}"}
             return super().create(validated_data)    
         
         
@@ -225,11 +217,11 @@ class OrdersSerializer(serializers.ModelSerializer):
     
     order_number = serializers.SerializerMethodField(read_only=True)
     order_items = OrderItemsSerializer(many=True,read_only=False)
-    paid = serializers.BooleanField(default=False)
+    paid = serializers.BooleanField(default=False, required=False)
     number_of_items = serializers.SerializerMethodField(read_only=True)
     total_quantity = serializers.SerializerMethodField(read_only=True)
-    # user = UserSerializer(read_only=True)
 
+    user = serializers.PrimaryKeyRelatedField(required=True, queryset=CustomUser.objects.all())
 
     class Meta:
         model = Order
@@ -272,18 +264,12 @@ class OrdersSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         order_items = self.__remove_related_data(validated_data,"order_items")
         created_order = super().create(validated_data)
-        print(f"created_order = {created_order}")
-        
-
 
         # need this because order equals not to id but order model object
         order_items = [dict(item, order=created_order.id) for item in order_items]
 
         order_lines = OrderItemsSerializer(data=order_items, many=True)
         
-        print(f"Order create validated_data = {validated_data}")
-        
-        # OrderItemsSerializer.create(order_lines,order_items)
         if order_lines.is_valid():
             order_lines.save()
         else:
@@ -291,9 +277,6 @@ class OrdersSerializer(serializers.ModelSerializer):
         
         
         return created_order
-    
-
-
 
 
 class OrderSerializer2(OrdersSerializer):
@@ -337,18 +320,9 @@ class LocationSerializer(serializers.ModelSerializer):
 
     def get_location_products(self, location):
 
-        
-        # productquantities = location.productquantity.all().select_related("product")
-        # products = [quantity.product for quantity in productquantities]
-        # products = Product.objects.prefetch_related("product_quantity")
-        # products = products.filter(product_quantity__location=location).all()
         products = Product.objects.filter(product_quantity__location=location).all()
 
         products_data = ProductSerializerBasicData(products, many=True, read_only=True)
         return products_data.data
 
 
-class OrderItemListSerializer(serializers.ListSerializer):
-    
-    def update(self, instance, validated_data):
-        return super().update(instance, validated_data)
