@@ -9,13 +9,10 @@ from django.db.models import Sum, Count
 
 from annoying.functions import get_object_or_None
 
-
-class PositiveNumberValidator:
-    def __call__(self, value):
-        if value <= 0:
-            message = "Price has to be larger than zero"
-            raise serializers.ValidationError(message)
-        
+from products_api.validators.product_serializer_validators import ContainsNumberValidator, ContainsValueValidator, \
+PositiveNumberValidator, ProductNameHasUppercaseLetterValidator,\
+ProductNameWordCountValidator, RequiredNumberOfRecordsValidator
+     
         
 class ProductQuantityLocationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -53,7 +50,7 @@ class ProductQuantityUpdateSerializer(ProductQuantitySerializer,serializers.Mode
   
 
 class ProductSerializerBasicData(serializers.ModelSerializer):
-    price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    price = serializers.DecimalField(max_digits=10, decimal_places=2, validators=[PositiveNumberValidator()])
 
     class Meta:
         model = Product
@@ -62,12 +59,23 @@ class ProductSerializerBasicData(serializers.ModelSerializer):
 
 class ProductSerializer(ProductSerializerBasicData):
     
-    product_quantity = ProductQuantitySerializer(read_only=False, many=True)
+    product_quantity = ProductQuantitySerializer(read_only=False, many=True, required=True)
 
-    categories = serializers.PrimaryKeyRelatedField(many=True, queryset = Category.objects)
+    categories = serializers.PrimaryKeyRelatedField(many=True, queryset = Category.objects.all())
     anything_you_like_count = serializers.SerializerMethodField()
     total_quantity = serializers.SerializerMethodField()
 
+    title = serializers.CharField(
+        validators=[
+                    ProductNameHasUppercaseLetterValidator(),
+                    ProductNameWordCountValidator(2),
+                    ContainsValueValidator("_")])
+    
+    sku = serializers.CharField(
+        validators=[ContainsValueValidator("-"),
+                    ContainsValueValidator("sku"),
+                    ContainsNumberValidator("sku value must have a number")])
+    
     class Meta:
         model = Product
 
@@ -131,7 +139,23 @@ class ProductSerializer(ProductSerializerBasicData):
     def get_total_quantity(self, product):
         total_quantity_sum = product.product_quantity.all().aggregate(Sum("quantity"))["quantity__sum"] or 0
         return total_quantity_sum
+
+    def to_internal_value(self, data):
         
+        for value in data.items():
+            if type(value) == str:
+                value = value.strip()
+        
+        
+        return super().to_internal_value(data)    
+    
+    def validate_categories(self,value):
+        
+        RequiredNumberOfRecordsValidator(2)(value)
+        
+        return value
+    
+
 class ProductUpdateSerializer(ProductSerializer):
     product_quantity = ProductQuantityUpdateSerializer(many=True)
     
@@ -141,6 +165,7 @@ class UpdateProductDescriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['short_description']
+
 
 class UpdateProductPriceSerializer(serializers.ModelSerializer):
     
@@ -156,6 +181,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ["email","id"]
+
 
 class OrderItemListSerializer(serializers.ListSerializer):
     
