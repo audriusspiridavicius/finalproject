@@ -2,9 +2,11 @@ from django.test import TestCase
 from shop.models import Product, ProductLocation, ProductQuantity, Category
 from products_api.serializers import ProductSerializer, LocationSerializer, CategorySerializer
 from rest_framework.serializers import ValidationError
-
+from django.db.models import Prefetch
 class TestProductSerializer(TestCase):
     
+
+
 
     @classmethod
     def setUpTestData(cls) -> None:
@@ -38,14 +40,23 @@ class TestProductSerializer(TestCase):
 
         return super().setUpTestData()
 
+    def _save_product_serializer(self):
+
+        if self.product_serializer.is_valid():
+            self.product_serializer.save()
+
+
     def test_product_is_valid(self):
 
-        self.product_serializer.is_valid()
         self.assertEqual(True,self.product_serializer.is_valid())
     
     def test_product_sku_invalid_01(self):
-        self.product_serializer.sku = "testproduct_sku_01"
-    
+        self.valid_product_data["sku"] = "test-product_sku_01"
+
+        
+       
+        self.assertEquals(True,self.product_serializer.is_valid())
+
     def test_product_sku_invalid_02(self):
         self.valid_product_data["sku"] = "test-product__01"
         self.product_serializer = ProductSerializer(data=self.valid_product_data)
@@ -116,8 +127,7 @@ class TestProductSerializer(TestCase):
     
     def test_product_created(self):
 
-        if self.product_serializer.is_valid():
-            self.product_serializer.save()
+        self._save_product_serializer()
         
         product_exists = Product.objects.filter(sku=self.valid_product_data["sku"]).exists()
         
@@ -125,9 +135,7 @@ class TestProductSerializer(TestCase):
     
     def test_one_product_created(self):
         
-        if self.product_serializer.is_valid():
-
-            self.product_serializer.save()
+        self._save_product_serializer()
         
         products_count = Product.objects.filter(sku=self.valid_product_data["sku"]).all().count()
         
@@ -135,10 +143,33 @@ class TestProductSerializer(TestCase):
     
     def test_new_categories_created(self):
 
-        if self.product_serializer.is_valid():
+        self._save_product_serializer()
+            
+        product = Product.objects.filter(sku=self.valid_product_data["sku"]).prefetch_related("categories")
+        if product.exists():
+            product = product.first().categories.count()
+        else:
+            product = None
+        self.assertEqual(2,product)    
 
-            self.product_serializer.save()
-            
-            product = Product.objects.filter(sku=self.valid_product_data["sku"]).prefetch_related("categories").all()
-            
-            self.assertEqual(2,product.first().categories.count())    
+    def test_product_quantity_records_saved_database(self):
+        
+        self._save_product_serializer()
+
+        products = Product.objects.filter(sku=self.valid_product_data["sku"]).prefetch_related("product_quantity")
+
+        product_quantity_saved = products.first().product_quantity.count()
+
+        self.assertEqual(1,product_quantity_saved)
+
+
+    def test_new_location_saved_in_db(self):
+
+        self._save_product_serializer()
+
+        product:Product = Product.objects.filter(sku=self.valid_product_data["sku"])\
+        .prefetch_related(Prefetch("product_quantity__location"))
+
+        location_name = product[0].product_quantity.all()[0].location.location_name
+
+        self.assertEqual("test location1", location_name)
