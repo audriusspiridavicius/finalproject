@@ -27,13 +27,14 @@ class TestProductSerializer(TestCase):
         cls.valid_product_data["short_description"] = ""
         cls.valid_product_data["product_quantity"] = [
             {
-                "quantity": 1111,
+                "quantity": 16,
                 "location": {
                     "location_name": "test location1",
                     "address": "test location1 address!!"
                 }
             }
         ]
+        cls.valid_product_data["images"] = []
 
         cls.product_serializer = ProductSerializer(data=cls.valid_product_data)
         
@@ -44,7 +45,8 @@ class TestProductSerializer(TestCase):
 
         if self.product_serializer.is_valid():
             self.product_serializer.save()
-
+        else:
+            print(self.product_serializer.errors)
 
     def test_product_is_valid(self):
 
@@ -109,7 +111,7 @@ class TestProductSerializer(TestCase):
     
     def test_valid_number_categories_selected(self):
         self.valid_product_data["categories"] = [1,2]
-        
+
         self.assertTrue(self.product_serializer.is_valid())
     
     def test_in_valid_number_categories_selected(self):

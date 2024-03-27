@@ -1,7 +1,7 @@
 from shop.models import Product, Category, ProductQuantity, ProductLocation, ProductImages, Order, OrderItems, CustomUser
 
 from rest_framework import serializers
-
+from rest_framework.validators import UniqueValidator
 import uuid 
 import random
 
@@ -34,7 +34,7 @@ class ProductQuantityLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductLocation
         fields = ['location_name','address']
-
+    
     
 class CategorySerializer(serializers.ModelSerializer):
     products = serializers.SlugRelatedField(slug_field='sku', many=True, queryset=Product.objects.all())
@@ -66,8 +66,22 @@ class ProductQuantitySerializer(serializers.ModelSerializer):
     product = serializers.PrimaryKeyRelatedField(required=False, queryset=Product.objects.all())
     class Meta:
         model = ProductQuantity
-        fields = ['id','quantity','location']    
+        fields = ['id','quantity','location', 'product']    
     
+    def create(self, validated_data):
+
+        location = validated_data.pop("location")
+
+        self.location = ProductQuantityLocationSerializer(data=location, many=False)
+
+        if self.location.is_valid():
+            self.location.save()
+        else:
+            print(f"location_serializer errors = {self.location.errors}")
+
+        validated_data["location"] = self.location.instance
+        return super().create(validated_data)
+
 
 class ProductQuantityUpdateSerializer(ProductQuantitySerializer,serializers.ModelSerializer):
     id = serializers.CharField(write_only=True, validators=[])
@@ -88,7 +102,7 @@ class ProductSerializer(ProductSerializerBasicData):
     categories = serializers.PrimaryKeyRelatedField(many=True, queryset = Category.objects.all())
     anything_you_like_count = serializers.SerializerMethodField()
     total_quantity = serializers.SerializerMethodField()
-
+    images = ProductImageSerializer(many=True, read_only=False)
     title = serializers.CharField(
         validators=[
                     ProductNameHasUppercaseLetterValidator(),
@@ -98,13 +112,13 @@ class ProductSerializer(ProductSerializerBasicData):
     sku = serializers.CharField(
         validators=[ContainsValueValidator("-"),
                     ContainsValueValidator("sku"),
-                    ContainsNumberValidator("sku value must have a number")])
+                    ContainsNumberValidator("sku value must have a number"), UniqueValidator(queryset=Product.objects, message="Such sku already exist. sku value must be unique")])
     
     class Meta:
         model = Product
 
         fields = ['sku','title','price','online','total_quantity','categories',
-                  'anything_you_like_count', 'date_created', 'short_description', 'product_quantity']
+                  'anything_you_like_count', 'date_created', 'short_description', 'product_quantity', 'images']
 
     def get_anything_you_like_count(self, obj):
         return random.randint(0,10)
@@ -116,21 +130,41 @@ class ProductSerializer(ProductSerializerBasicData):
         return value
     
     def create(self, validated_data):
-        
+
+        images = validated_data.pop('images')
         product_quantity = validated_data.pop('product_quantity')
-        
         categories = validated_data.pop('categories')
+
         product = Product.objects.create(**validated_data)
         product.categories.set(categories)
-        
-        for product_quantity_record in product_quantity:
+
+        for image in images:
+            image["product"] = product.id
+        product_image_serializer = ProductImageSerializer(data = images, many = True)
+
+        if product_image_serializer.is_valid():
+            product_image_serializer.save()
+        else:
+            print(f"invalid data errors = {product_image_serializer.errors}")
+            print(f"invalid image data = {product_image_serializer.initial_data}")
             
-            location_data = product_quantity_record.pop('location')
-            location = get_object_or_None(ProductLocation,location_name=location_data.get("location_name"))
+        for prod_quantity in product_quantity:
+            prod_quantity["product"] = product.id
+        product_quantity_serializer = ProductQuantitySerializer(data=product_quantity, many=True)
+
+        if product_quantity_serializer.is_valid():
+            product_quantity_serializer.save()
+        else:
+            print(f"product_quantity_serializer error = {product_quantity_serializer.errors}")
+
+        # for product_quantity_record in product_quantity:
             
-            if not location:
-                location = ProductLocation.objects.create(**location_data)
-            ProductQuantity.objects.create(product=product,location=location,**product_quantity_record)
+        #     location_data = product_quantity_record.pop('location')
+        #     location = get_object_or_None(ProductLocation,location_name=location_data.get("location_name"))
+            
+        #     if not location:
+        #         location = ProductLocation.objects.create(**location_data)
+        #     ProductQuantity.objects.create(product=product,location=location,**product_quantity_record)
 
         return product
     
@@ -374,5 +408,3 @@ class LocationSerializer(serializers.ModelSerializer):
 
         products_data = ProductSerializerBasicData(products, many=True, read_only=True)
         return products_data.data
-
-

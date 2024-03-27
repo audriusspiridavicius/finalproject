@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap4',
     'products_api',
+    # 'drf_redesign',
     'rest_framework',
     'django_filters',
     'rest_framework.authtoken',
