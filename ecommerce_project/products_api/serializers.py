@@ -15,6 +15,22 @@ ProductNameWordCountValidator, RequiredNumberOfRecordsValidator
      
         
 class ProductQuantityLocationSerializer(serializers.ModelSerializer):
+    
+    def __init__(self, instance=None, data=..., **kwargs):
+        
+        if data is ...:
+            data = {}
+        else:
+            # Ensure that the data is a dictionary
+            data = dict(data)
+        location_name = data.get("location_name",None)
+        if location_name:
+            location = ProductLocation.objects.filter(location_name=location_name).first()
+            if location:
+                instance = location
+        
+        super().__init__(instance, data, **kwargs)
+    
     class Meta:
         model = ProductLocation
         fields = ['location_name','address']
