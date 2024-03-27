@@ -89,7 +89,7 @@ class ProductQuantity(models.Model):
         
 
 class ProductLocation(models.Model):
-    location_name = models.CharField(max_length=250, )
+    location_name = models.CharField(max_length=250, blank=False)
     address = models.CharField(max_length=500)
 
     def __str__(self) -> str:
