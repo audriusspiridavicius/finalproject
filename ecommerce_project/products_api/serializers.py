@@ -63,7 +63,7 @@ class ProductQuantitySerializer(serializers.ModelSerializer):
     
     location = ProductQuantityLocationSerializer(read_only=False)
     id = serializers.ReadOnlyField()
-
+    product = serializers.PrimaryKeyRelatedField(required=False, queryset=Product.objects.all())
     class Meta:
         model = ProductQuantity
         fields = ['id','quantity','location']    
