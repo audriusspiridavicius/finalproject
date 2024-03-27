@@ -51,6 +51,14 @@ class CategorySerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(validation_error_message)
 
 
+class ProductImageSerializer(serializers.ModelSerializer):
+    image_name =serializers.FileField()
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), required=False)
+    class Meta:
+        model = ProductImages
+        fields = ['image_name','product']
+
+
 class ProductQuantitySerializer(serializers.ModelSerializer):
     
     location = ProductQuantityLocationSerializer(read_only=False)
