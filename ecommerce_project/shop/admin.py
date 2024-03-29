@@ -3,44 +3,63 @@ from django.contrib import admin
 from .models import CustomUser, Product, ProductDescription, ProductPrices, ProductQuantity, ProductLocation
 from .models import Category, ProductImages, ProductAttributes, ShoppingBasket
 from .models import Order, OrderItems, DeliveryAddress
-
+from django.core.paginator import Paginator
 
 class ProductAttributesInline(admin.TabularInline):
     model = ProductAttributes
     min_num = 0
     extra = 0
     
+
 class ProductDescriptionInline(admin.StackedInline):
     model = ProductDescription
     min_num = 1
     extra = 0
     
+
 class ProductImagesInline(admin.StackedInline):
     model = ProductImages
     min_num = 1
     extra = 0
-    
+
+
+class ProductCategoryInline(admin.StackedInline):
+    model = Category
+    extra = 2
+
+@admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    inlines = [ProductDescriptionInline,ProductImagesInline,ProductAttributesInline]
-    list_display = ['title', 'sku', 'image', 'online']
-    # list_display = ['title', 'sku', 'quantity']
+    model = Product
+    inlines = [ProductDescriptionInline,ProductImagesInline]
+    list_display = ['title', 'sku', 'image', 'online', 'status']
     list_editable = ['online']
-    
-    
+    search_fields = ['sku',]
+    actions = ["change_status_available","change_status_out_of_stock"] 
+    autocomplete_fields = ['categories']
+    list_per_page = 10
+    actions_selection_counter = False
     def get_readonly_fields(self, request, obj=None):
         if obj:
             return ["sku"]
         else:
             return []
         
-        
-    # def quantity(self,*args):
-    #     return f"{Product.gquantity}"
+
+    @admin.action(description="mark product as available")
+    def change_status_available(self, request, queryset):
+        queryset.update(status=Product.AVAILABLE)
+
+    @admin.action(description="mark product as out of stock")
+    def change_status_out_of_stock(self, request, queryset):
+        self.actions_selection_counter = True
+        queryset.update(status=Product.OUT_OF_STOCK)
+
 
 class CategoryAdmin(admin.ModelAdmin):
     model = Category
     list_display = ['name','picture','online']
     list_editable = ['online']
+    search_fields = ['name']
 
 class CustomUserAdmin(admin.ModelAdmin):
     model = CustomUser
@@ -79,7 +98,7 @@ class ProductQuantityAdmin(admin.ModelAdmin):
         return obj.location.location_name
 
         
-admin.site.register(Product,ProductAdmin)
+
 admin.site.register(ProductQuantity, ProductQuantityAdmin)
 admin.site.register(ProductDescription)
 admin.site.register(ProductPrices)
@@ -92,3 +111,7 @@ admin.site.register(CustomUser,CustomUserAdmin)
 
 
 admin.site.register(Order, OrderAdmin)
+
+
+
+

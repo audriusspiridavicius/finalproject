@@ -10,9 +10,11 @@ from datetime import datetime
 from django.db.models import UniqueConstraint
 from django.db.models.functions import Lower
 from django.core.mail import EmailMessage
+from django.core.validators import MinLengthValidator
 
 
 from .manager import OrderManager
+
 
 # Create your models here.
 class ModelDate(models.Model):
@@ -45,19 +47,41 @@ class ProductImages(models.Model):
     
 
 class BaseProduct(ModelDate,models.Model):
+    
     title = models.CharField(max_length=300)
     sku = models.CharField(max_length=100, unique=True, null=False, blank=False)
     short_description = models.CharField(max_length=1000, blank=True, default="")
     price = models.FloatField(null=False, blank=False, default=0.00)
     
+
+
     class Meta:
         abstract = True
     
-    
+
 class Product(BaseProduct):
     
-    online = models.BooleanField(default=False)
+    AVAILABLE = "AV"
+    OUT_OF_STOCK = "AOS"
+    SOLD_OUT = "SOUT"
+    DAMAGED_PACKAGE = "DMG"
+    STATUS1 = "ST1"
+    STATUS2 = "ST2"
+    STATUS3 = "ST3"
+
+    STATUS_CHOICES = {
+        AVAILABLE: "Available",
+        OUT_OF_STOCK: "Product is out of stock",
+        SOLD_OUT: "Product is sold out",
+        DAMAGED_PACKAGE: "Product is damaged or package is damaged",
+        STATUS1: "Example status 1",
+        STATUS2: "Example status 2",
+        STATUS3: "Example status 3",
+    }
     
+    
+    online = models.BooleanField(default=False)
+    categories = models.ManyToManyField('Category', related_name="products")
     def __str__(self) -> str:
         return f"{self.title}"
     
@@ -69,7 +93,14 @@ class Product(BaseProduct):
             image_url = f"{self.images.filter(product_id=self.id,main=True)[0].image_name}"
         
         return image_url
+
     
+    status = models.CharField(choices=STATUS_CHOICES.items(),
+                                   null=False,
+                                   default=AVAILABLE,
+                                   max_length=4
+                                   )
+
 class ProductQuantity(models.Model):
     
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_quantity')
@@ -117,7 +148,6 @@ class ProductPrices(ModelDate,models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=100, null=False, blank=False)           
     description = models.CharField(max_length=1000)
-    products = models.ManyToManyField(Product, related_name="categories")
     picture = models.ImageField(upload_to=settings.CATEGORY_IMAGES_FOLDER, default="img/categories/default.png")
     online = models.BooleanField(default=False)
     def __str__(self):
