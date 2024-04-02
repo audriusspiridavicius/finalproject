@@ -151,7 +151,7 @@ EMAIL_HOST_PASSWORD = 'qunxxjjtlhnnqido'#password associated with above email-id
 # EMAIL_HOST_PASSWORD = 'ABCDEFGH99zbc!'#password associated with above email-id
 
 # ALLOWED_HOSTS = ['*']
-LOGOUT_REDIRECT_URL = 'homepage'
+LOGOUT_REDIRECT_URL = 'logout'
 
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
