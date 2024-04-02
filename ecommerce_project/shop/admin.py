@@ -30,7 +30,7 @@ class ProductCategoryInline(admin.StackedInline):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     model = Product
-    inlines = [ProductDescriptionInline,ProductImagesInline]
+    inlines = [ProductDescriptionInline,ProductImagesInline, ProductAttributesInline]
     list_display = ['title', 'sku', 'image', 'online', 'status']
     list_editable = ['online']
     search_fields = ['sku',]
