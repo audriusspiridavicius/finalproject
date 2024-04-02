@@ -8,7 +8,7 @@
 
 {% block main %}
 {%load static%}
-<div class="container">
+<div class="container product-page">
     <div class="flex flex-wrap">
         <div class="col-5 flex flex-wrap ord-2">
             <img src="{% static main_image%}" alt="product image" class="col-sm-12 mb-3"/>
@@ -21,17 +21,12 @@
 
         </div>
         <div class="col-7 ord-1 p-2">
-            <h1>{{product.title}}</h1>
-            <div>sku:{{product.sku}}</div>
+            {%load product%}
             
-            <div>{{product.short_description}}</div>
-            
-            {%for attribute in product.attributes.all%}
-                <div>{{attribute.property}}:{{attribute.value}}</div>
+            {% product_main_info product%}
+            {%product_attributes product.sku%}
 
-            {%endfor%}
-
-
+            {% add_to_basket_button product.id%}
         </div>
     </div>
     <div class="col-xs-12">

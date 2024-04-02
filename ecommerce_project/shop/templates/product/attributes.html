@@ -1,0 +1,12 @@
+{%for attribute in attribute_list%}
+    <br>    
+    <sapn class="bold attribute-name">{{attribute.name}}</sapn>
+    <br> 
+    {%for value in attribute.values%}
+        <label for="{{attribute.name}}{{value}}">{{value}}</label>
+        <input type="radio" name='{{attribute.name}}' value="{{value}}" id="{{attribute.name}}{{value}}"/>
+    {%endfor%}
+
+
+
+{%endfor%}

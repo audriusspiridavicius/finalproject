@@ -97,6 +97,13 @@ img{
 .ord-2{
     order:2;
 }
+.product_price{
+    font-size: 20px;
+}
+.bold{
+    font-weight: bold;
+}
+
 
 /* categories css */
 
@@ -183,3 +190,27 @@ img{
 }
 
 /* checkout end */
+
+
+/* product page start */
+
+.price{
+    padding: 0px 15px;
+    font-size: 22px;
+}
+.product_price{
+    margin: 10px 0px;
+}
+.short_description{
+    margin-bottom: 10px;
+}
+
+.tab-content{
+    padding: 10px 30px;
+}
+.product-page .add-to-basket{
+    margin-top: 50px;
+}
+/* product page end */
+
+
