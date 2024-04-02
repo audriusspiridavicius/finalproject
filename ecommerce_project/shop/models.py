@@ -41,9 +41,9 @@ class ProductImages(models.Model):
         
         return super().save(*args, **kwargs)
     
-    @property
-    def im_age(self):
-        return f"{settings.STATIC_URL}/{self.image_name}"
+    # @property
+    # def im_age(self):
+    #     return f"{settings.STATIC_URL}/{self.image_name}"
     
 
 class BaseProduct(ModelDate,models.Model):

@@ -4,6 +4,7 @@ from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
 from django.urls import include, path
 from . import views
+from django.contrib.auth.views import LogoutView
 urlpatterns = [
      path('homepage/',views.HomepageView.as_view(), name='homepage'),
      path('',views.HomepageView.as_view()),
@@ -34,8 +35,9 @@ urlpatterns = [
      
      path('order/', views.OrderView.as_view(), name='order'),
      
-     path('delivery_info_form', views.DeliveryFormView_ajax.as_view(), name='delivery_info_form_ajax')
-     
+     path('delivery_info_form', views.DeliveryFormView_ajax.as_view(), name='delivery_info_form_ajax'),
+     # path('logout', LogoutView, name='logout'),
+     path( "logout/", LogoutView.as_view( http_method_names=["post", "get", "options"] ),)
 
 ] + \
 static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

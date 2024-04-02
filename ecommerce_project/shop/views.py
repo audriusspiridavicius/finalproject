@@ -24,6 +24,7 @@ from django.views.generic import DetailView, CreateView, UpdateView
 from django.contrib.auth import logout
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LogoutView
 
 from .forms import EmailForm
 from .forms import RegistrationForm, DeliveryTypeForm, DeliveryDetailsForm, PaymnetTypeForm

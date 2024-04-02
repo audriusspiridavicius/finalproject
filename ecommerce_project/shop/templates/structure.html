@@ -35,7 +35,11 @@
                 <div class="relative">
                   <a href="{%url 'account'%}" class="account-email">{{user.email}}</a>
                   <br>
-                  <a href="{%url 'logout'%}" class="font-15 absolute log_out_link">Atsijungti</a>
+                  <form method="post" action="/logout/">
+                    {% csrf_token %}
+                    <input type="submit" class="font-15 absolute log_out_link" value="Atsijungti"/>
+                  </form>
+                  
                 </div>  
                 
                 {%endif%}
