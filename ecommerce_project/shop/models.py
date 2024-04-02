@@ -27,7 +27,7 @@ class ModelDate(models.Model):
    
 
 class ProductImages(models.Model):
-    image_name = models.ImageField(upload_to=settings.PRODUCT_IMAGES_FOLDER)
+    image_name = models.ImageField(upload_to=settings.PRODUCT_IMAGES_FOLDER, max_length=1000)
     product = models.ForeignKey("Product", on_delete=models.CASCADE, related_name='images')
     main = models.BooleanField(default=False)
     

@@ -10,7 +10,7 @@
             <a href = "{%url 'category' pk=cat.id%}" class="category-link">
             <div class="itm-block">
                 <div class="cat-img">
-                    <img src="{% static cat.picture.url %}" alt="category image"/>
+                    <img src="{% static cat.picture %}" alt="category image"/>
                 </div>
                 <div class="category-name text-center">{{cat.name}}</div>
             </div>
