@@ -7,7 +7,7 @@ from django.views import View, generic
 from django.core import paginator
 
 from .models import Account, Company, DeliveryAddress, Product, Category, ProductAttributes, ShoppingBasket, OrderItems
-from .models import Order, BillingAddress
+from .models import Order, BillingAddress, ProductImages
 
 from django.db.models import Q
 from django.db.models import Sum, Count
@@ -32,6 +32,7 @@ from .helper import CartHelper
 # Create your views here.
 import copy
 User = get_user_model()
+from django.shortcuts import get_object_or_404
 
 class HomepageView(generic.ListView):
     template_name = 'homepage.html'
@@ -118,14 +119,29 @@ class ProductDetailView(generic.DetailView):
     model = Product
     template_name = 'product.html'
     
-    def get_queryset(self):
+    # def get_queryset(self):
+        
+    #     product_id = self.kwargs['pk']
+        
+    #     product = Product.objects.filter(id=product_id, online=True)
+    #     # product = get_object_or_404(Product,id=product_id)
+        
+    #     return product
+    
+    def get_object(self, queryset: models.QuerySet[Any] | None = ...) -> models.Model:
         
         product_id = self.kwargs['pk']
         
-        product = Product.objects.filter(id=product_id, online=True)
+        product = get_object_or_404(Product, id=product_id, online=True)
         
         return product
-
+    
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        
+        product = kwargs["object"]
+        kwargs["main_image"] = ProductImages.objects.filter(product=product,main=True).first().image_name
+        
+        return super().get_context_data(**kwargs)
 
 class ShoppingBasketListView(generic.ListView):
     model = ShoppingBasket
@@ -408,6 +424,4 @@ class DeliveryFormView_ajax(UpdateView,FormView):
         account = usr.account
         
         return account.delivery
-    
-
     

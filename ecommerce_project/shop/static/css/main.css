@@ -91,6 +91,12 @@ img{
     padding: 15px 30px;
 }
 
+.ord-1{
+    order:1;
+}
+.ord-2{
+    order:2;
+}
 
 /* categories css */
 
