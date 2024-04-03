@@ -81,7 +81,7 @@ class Product(BaseProduct):
     
     
     online = models.BooleanField(default=False)
-    categories = models.ManyToManyField('Category', related_name="products")
+    categories = models.ManyToManyField('Category')
     def __str__(self) -> str:
         return f"{self.sku} - {self.title}"
     
@@ -153,7 +153,7 @@ class Category(models.Model):
     description = models.CharField(max_length=1000)
     picture = models.ImageField(upload_to=settings.CATEGORY_IMAGES_FOLDER, default="img/categories/default.png")
     online = models.BooleanField(default=False)
-
+    products = models.ManyToManyField(Product, through=Product.categories.through, blank=True)
     def __str__(self):
         return f"{self.name}"
     
@@ -323,10 +323,10 @@ class OrderItems(BaseProduct, ModelDate):
     
     
     
-# class CategoryProducts(models.Model):
+# class ProductCategories(models.Model):
 #     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="categories")
 #     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="products")
 
 #     constraints = [
-#         UniqueConstraint(fields=["product", "category"], name="unique_category_product")
+#         UniqueConstraint(fields=["product", "category"], name="unique_product_categories")
 #     ]
