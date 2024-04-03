@@ -113,10 +113,13 @@ class ProductQuantity(models.Model):
         return f"{self.quantity}"
 
     class Meta:
-        # unique_together = ["product", "location"]
+        
+        verbose_name_plural = "Product quantities"
+        
         constraints = [
             UniqueConstraint(Lower('product'), Lower('location'), name='unique_product_location')
         ]
+
         
 
 class ProductLocation(models.Model):
@@ -150,8 +153,13 @@ class Category(models.Model):
     description = models.CharField(max_length=1000)
     picture = models.ImageField(upload_to=settings.CATEGORY_IMAGES_FOLDER, default="img/categories/default.png")
     online = models.BooleanField(default=False)
+
     def __str__(self):
         return f"{self.name}"
+    
+    class Meta:
+        verbose_name_plural = "Categories"
+    
     
     
 class ProductDescription(models.Model):

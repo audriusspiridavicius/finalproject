@@ -101,7 +101,7 @@ class ProductQuantityAdmin(admin.ModelAdmin):
 
 admin.site.register(ProductQuantity, ProductQuantityAdmin)
 admin.site.register(ProductDescription)
-admin.site.register(ProductPrices)
+# admin.site.register(ProductPrices)
 admin.site.register(ProductLocation)
 
 admin.site.register(Category, CategoryAdmin)
