@@ -49,6 +49,7 @@ class CategorySerializer(serializers.ModelSerializer):
         validation_error_message = "Category name must be at least 5 characters"
         if len(value) < 5:
             raise serializers.ValidationError(validation_error_message)
+        return value
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
