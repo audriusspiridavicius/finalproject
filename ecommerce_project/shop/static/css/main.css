@@ -104,7 +104,21 @@ img{
     font-weight: bold;
 }
 
+ul.nav > li {
+    display: flex;
+    align-items: center;
+}
 
+#website_logo{
+    width:100px
+}
+.log_out_link{
+    border: 0;
+    background: transparent;
+}
+.log_out_link:hover{
+    text-decoration: underline;
+}
 /* categories css */
 
 .category-name{
