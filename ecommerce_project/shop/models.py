@@ -83,7 +83,7 @@ class Product(BaseProduct):
     online = models.BooleanField(default=False)
     categories = models.ManyToManyField('Category', related_name="products")
     def __str__(self) -> str:
-        return f"{self.title}"
+        return f"{self.sku} - {self.title}"
     
     @property
     def image(self):
