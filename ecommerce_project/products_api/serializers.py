@@ -38,12 +38,13 @@ class ProductQuantityLocationSerializer(serializers.ModelSerializer):
     
 class CategorySerializer(serializers.ModelSerializer):
     products = serializers.SlugRelatedField(slug_field='sku', many=True, queryset=Product.objects.all())
-    
-    
+    picture = serializers.FileField(required=False)
+    name = serializers.CharField(read_only=False, allow_null=False)
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ['name', 'description', 'online', 'picture','products']
     
+
     
     def validate_name(self, value):
         validation_error_message = "Category name must be at least 5 characters"
