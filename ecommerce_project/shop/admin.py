@@ -60,7 +60,8 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ['name','picture','online']
     list_editable = ['online']
     search_fields = ['name']
-
+    # fields = ['name','picture','online']
+    autocomplete_fields = ['products']
 class CustomUserAdmin(admin.ModelAdmin):
     model = CustomUser
     exclude = ['account','unique_link_id']
