@@ -44,15 +44,23 @@ class CategoriesView(generic.ListView):
     template_name = 'categories.html'
     model = Category
     context_object_name = 'categories'
-    queryset = Category.objects.filter(online=True)
+
+    def get_queryset(self) -> models.QuerySet[Any]:
+        cat_id = self.request.GET.get("cat_id")
+        categories_ids = []
+        categories = Category.objects.filter(online=True).prefetch_related("related_categories").all()
+        
+        if cat_id:
+            categories_ids = Category.objects.filter(related_categories=cat_id).values_list("id")
+            categories = categories.filter(id__in=categories_ids).all()
+        
+        return categories
     
     
 class ProductsListView(generic.ListView):
     template_name = 'products.html'
     model = Product
     context_object_name = "products"    
-    # paginate_by = 2
-    # paginator_class ???
     
     
     def get_queryset(self):

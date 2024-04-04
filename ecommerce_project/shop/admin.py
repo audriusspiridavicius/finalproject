@@ -1,10 +1,11 @@
 from django.contrib import admin
 
+
 from .models import CustomUser, Product, ProductDescription, ProductPrices, ProductQuantity, ProductLocation
 from .models import Category, ProductImages, ProductAttributes, ShoppingBasket
 from .models import Order, OrderItems, DeliveryAddress
 from django.core.paginator import Paginator
-
+from django.utils.safestring import mark_safe
 class ProductAttributesInline(admin.TabularInline):
     model = ProductAttributes
     min_num = 0
@@ -26,6 +27,7 @@ class ProductImagesInline(admin.StackedInline):
 class ProductCategoryInline(admin.StackedInline):
     model = Category
     extra = 2
+
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -54,17 +56,30 @@ class ProductAdmin(admin.ModelAdmin):
         self.actions_selection_counter = True
         queryset.update(status=Product.OUT_OF_STOCK)
 
-
+    
 class CategoryAdmin(admin.ModelAdmin):
     model = Category
-    list_display = ['name','picture','online']
+    list_display = ['name','picture','online','view_category']
     list_editable = ['online']
     search_fields = ['name']
-    # fields = ['name','picture','online']
-    autocomplete_fields = ['products']
+    actions = ['remove_all_products']
+    autocomplete_fields = ['products','related_categories']
+
+    def view_category(self, category):
+
+        return mark_safe(f"<a target='_blank' href='{category.get_absolute_url()}' >View on website</a>")
+    
+    @admin.action(description="remove all products from category")
+    def remove_all_products(self,request, queryset):
+        
+        for category in queryset:
+            category.products.set([])
+
+
 class CustomUserAdmin(admin.ModelAdmin):
     model = CustomUser
     exclude = ['account','unique_link_id']
+
 
 class OrderLines(admin.TabularInline):
     model = OrderItems

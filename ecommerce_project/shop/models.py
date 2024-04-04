@@ -11,7 +11,7 @@ from django.db.models import UniqueConstraint
 from django.db.models.functions import Lower
 from django.core.mail import EmailMessage
 from django.core.validators import MinLengthValidator
-
+from django.urls import reverse
 
 from .manager import OrderManager
 
@@ -143,7 +143,7 @@ class ProductPrices(ModelDate,models.Model):
                                   default=PriceTypes.ONLINE)
     price = models.DecimalField(decimal_places=2, max_digits=100, )
     
-
+    
     
     def __str__(self):
         return f"{self.price}"
@@ -160,7 +160,14 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = "Categories"
     
+    def get_absolute_url(self):
+
+        url = reverse("category", kwargs={"pk": self.pk})
+        # return f"/kategorija/{self.pk}"
+        return url
     
+    related_categories = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="related_to")
+        
     
 class ProductDescription(models.Model):
     category = models.CharField(max_length=100)
