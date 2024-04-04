@@ -4,10 +4,20 @@
 {%load static%}
 {% block main %}
 
-<div class="grid-container flex justify-content-center col-12" >    
+<div class="grid-container flex" >    
+        
     {%if categories%}
         {%for cat in categories%}
+            
+        {%if cat.related_to.all %}
+          
+        <a href = "{%url 'categories' %}?cat_id={{cat.id}}" class="category-link">
+        {%else%}
             <a href = "{%url 'category' pk=cat.id%}" class="category-link">
+        {%endif%}
+
+        
+       
             <div class="itm-block">
                 <div class="cat-img">
                     <img src="{% static cat.picture %}" alt="category image"/>
