@@ -10,9 +10,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='category',
-            name='related_categories',
-            field=models.ManyToManyField(through='shop.CategoryParent', to='shop.category'),
-        ),
+
     ]
