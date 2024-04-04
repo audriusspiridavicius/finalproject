@@ -2,3 +2,4 @@
 venv/
 db.*
 products/
+ecommerce_project/shop/static/img/categories/
